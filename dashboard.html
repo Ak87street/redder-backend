@@ -3,61 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redder Dashboard</title>
+    <title>CEO Dashboard | REDDER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #800000; color: white; }
-        .btn-delete { background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+        body { font-family: 'Montserrat', sans-serif; background-color: #fdfbf7; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #800000; padding-bottom: 20px; margin-bottom: 30px; }
+        h1 { font-family: 'Playfair Display', serif; color: #800000; margin: 0; }
+        .refresh-btn { background: #800000; color: white; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; border-radius: 5px; }
+        
+        .order-card { background: white; padding: 25px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #800000; }
+        .order-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .order-id { font-weight: bold; color: #888; font-size: 12px; }
+        .customer-details { margin-bottom: 15px; font-size: 14px; color: #333; }
+        .customer-details strong { display: block; margin-bottom: 5px; font-size: 16px; }
+        
+        .items-list { background: #f9f9f9; padding: 15px; border-radius: 5px; }
+        .item-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; }
+        
+        .total-row { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; font-weight: bold; font-size: 18px; color: #800000; }
+        
+        .actions { margin-top: 20px; text-align: right; }
+        .delete-btn { background: white; border: 1px solid #ccc; padding: 8px 15px; cursor: pointer; color: #666; font-size: 12px; border-radius: 4px; }
+        .delete-btn:hover { background: #fee; color: red; border-color: red; }
     </style>
 </head>
 <body>
-    <h1>Order Dashboard</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Customer</th>
-                <th>Address</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="order-table">
-            </tbody>
-    </table>
+
+    <div class="header">
+        <h1>Sales Dashboard</h1>
+        <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh Orders</button>
+    </div>
+
+    <div id="orders-container">
+        <p style="text-align:center; color:#888;">Connecting to Satellite...</p>
+    </div>
 
     <script>
         async function loadOrders() {
-            // UPDATED: No localhost
-            const response = await fetch('/api/orders');
-            const orders = await response.json();
-            
-            const table = document.getElementById('order-table');
-            table.innerHTML = '';
-
-            orders.forEach(order => {
-                const date = new Date(order.date).toLocaleDateString();
-                const itemsList = order.items.map(i => i.name).join(", ");
+            try {
+                // This fetches from your LIVE Database
+                const res = await fetch('/api/orders');
+                const orders = await res.json();
                 
-                const row = `<tr>
-                    <td>${date}</td>
-                    <td>${order.customerName}<br><small>${order.phone}</small></td>
-                    <td>${order.address}</td>
-                    <td>${itemsList}</td>
-                    <td>₹${order.totalAmount}</td>
-                    <td><button class="btn-delete" onclick="deleteOrder('${order._id}')">Done/Delete</button></td>
-                </tr>`;
-                table.innerHTML += row;
-            });
+                const container = document.getElementById('orders-container');
+                container.innerHTML = '';
+
+                if(orders.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; font-size:18px;">No orders yet. Waiting for sales... 🚀</p>';
+                    return;
+                }
+
+                orders.forEach(order => {
+                    let itemsHtml = '';
+                    order.items.forEach(item => {
+                        itemsHtml += `
+                            <div class="item-row">
+                                <span>${item.name} (Size: ${item.selectedSize || 'N/A'})</span>
+                                <span>₹${item.rawPrice}</span>
+                            </div>`;
+                    });
+
+                    const date = new Date(order.date).toLocaleString();
+
+                    container.innerHTML += `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span class="order-id">ORDER ID: ${order._id}</span>
+                                <span class="order-id">${date}</span>
+                            </div>
+                            <div class="customer-details">
+                                <strong>👤 ${order.customerName}</strong>
+                                📞 <a href="tel:${order.phone}">${order.phone}</a><br>
+                                📍 ${order.address}
+                            </div>
+                            <div class="items-list">
+                                ${itemsHtml}
+                            </div>
+                            <div class="total-row">
+                                <span>TOTAL REVENUE</span>
+                                <span>₹${order.totalAmount}</span>
+                            </div>
+                            <div class="actions">
+                                <button class="delete-btn" onclick="deleteOrder('${order._id}')">🗑️ Archive Order</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('orders-container').innerText = "Error loading orders.";
+            }
         }
 
         async function deleteOrder(id) {
-            if(confirm("Mark this order as complete/delete?")) {
-                // UPDATED: No localhost
-                await fetch(`/api/orders/${id}`, { method: 'DELETE' });
+            if(confirm("Mark this order as complete/archived?")) {
+                await fetch('/api/orders/' + id, { method: 'DELETE' });
                 loadOrders();
             }
         }
