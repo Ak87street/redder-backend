@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redder.in | Premium Ethnic Wear</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { 
+                        redder: { 600: '#D90429', 800: '#900C22', 900: '#640D14' }, 
+                        cream: '#FDFBF7'
+                    },
+                    fontFamily: { 
+                        serif: ['"Playfair Display"', 'serif'], 
+                        sans: ['"Lato"', 'sans-serif'] 
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.8s ease-out forwards'
+                    },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { min-height: 100vh; display: flex; flex-direction: column; background-color: #FDFBF7; }
+        
+        /* IMAGE FLIP LOGIC (FORCED) */
+        .card-media { position: relative; aspect-ratio: 3/4; overflow: hidden; }
+        .card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.6s ease-in-out, transform 0.8s ease; }
+        
+        .card-media .img-back { opacity: 0; z-index: 10; }
+        .card-media .img-front { opacity: 1; z-index: 20; }
+        
+        /* ON HOVER */
+        .product-card:hover .img-front { opacity: 0; }
+        .product-card:hover .img-back { opacity: 1; transform: scale(1.1); }
+        .product-card:hover { transform: translateY(-5px); }
+
+        /* HERO GRADIENT */
+        .hero-gradient { background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%); }
+
+        /* SCROLLBAR HIDE */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        #toast { visibility: hidden; min-width: 250px; background-color: #1f2937; color: #fff; text-align: center; border-radius: 0px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%); letter-spacing: 1px; text-transform: uppercase; font-size: 12px; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body class="antialiased font-sans">
+
+    <div class="bg-redder-900 text-white text-[10px] py-1.5 text-center uppercase tracking-[0.2em] flex justify-between px-6 items-center">
+        <span class="hidden md:block opacity-75">India's Finest Ethnic Wear</span>
+        <span class="font-bold mx-auto md:mx-0">Code: REDDER10</span>
+        <span class="cursor-pointer opacity-75 hover:opacity-100 hidden md:block" onclick="app.router('login')">Login / Join</span>
+    </div>
+
+    <nav class="bg-cream sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            
+            <div class="cursor-pointer flex-shrink-0" onclick="app.router('home')">
+                <h1 class="font-serif text-3xl font-bold text-redder-900 tracking-tighter">REDDER<span class="text-gold">.IN</span></h1>
+            </div>
+
+            <div class="hidden md:flex space-x-10 text-[11px] font-bold text-gray-800 uppercase tracking-[0.15em]" id="desktop-menu">
+                </div>
+
+            <div class="flex items-center space-x-6">
+                <button class="text-gray-400 hover:text-redder-800 transition" onclick="app.router('wishlist')">
+                    <i class="far fa-heart text-lg"></i>
+                    <span id="wish-badge" class="absolute -top-1 -right-2 bg-redder-900 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full hidden">0</span>
+                </button>
+                <button class="text-gray-400 hover:text-redder-800 transition" onclick="app.router('cart')">
+                    <i class="fas fa-shopping-bag text-lg"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-2 bg-redder-900 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full hidden">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="md:hidden border-t border-gray-100 overflow-x-auto hide-scroll whitespace-nowrap px-4 py-3 bg-white flex gap-3" id="mobile-menu">
+            </div>
+    </nav>
+
+    <main id="app-root" class="flex-grow">
+        <div class="h-96 flex flex-col items-center justify-center text-redder-900">
+            <div class="w-16 h-16 border-4 border-redder-100 border-t-redder-900 rounded-full animate-spin mb-4"></div>
+            <p class="font-serif tracking-widest text-xs uppercase">Loading Luxury...</p>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 pt-20 pb-10 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+            <div>
+                <h4 class="font-serif font-bold text-2xl mb-6 text-redder-900">REDDER.IN</h4>
+                <p class="text-gray-500 text-sm leading-7 font-light">Crafting the future of Indian fashion. Heritage fabrics, modern silhouettes, sustainable soul.</p>
+            </div>
+            <div>
+                <h5 class="font-bold text-xs uppercase tracking-widest mb-6 text-gray-900">Legal</h5>
+                <ul class="space-y-4 text-sm text-gray-500 font-light">
+                    <li><a href="#" onclick="app.router('privacy')" class="hover:text-redder-600 transition">Privacy Policy</a></li>
+                    <li><a href="#" onclick="app.router('return')" class="hover:text-redder-600 transition">Return Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-xs uppercase tracking-widest mb-6 text-gray-900">Support</h5>
+                <ul class="space-y-4 text-sm text-gray-500 font-light">
+                    <li><a href="#" onclick="app.router('contact')" class="hover:text-redder-600 transition">Contact Us</a></li>
+                    <li><a href="#" onclick="app.router('login')" class="hover:text-redder-600 transition">My Account</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-xs uppercase tracking-widest mb-6 text-gray-900">Social</h5>
+                <div class="flex space-x-6 text-gray-400 text-xl">
+                    <i class="fab fa-instagram hover:text-redder-600 transition cursor-pointer"></i>
+                    <i class="fab fa-facebook-f hover:text-redder-600 transition cursor-pointer"></i>
+                    <i class="fab fa-pinterest-p hover:text-redder-600 transition cursor-pointer"></i>
+                </div>
+            </div>
+        </div>
+        <div class="text-center text-[10px] uppercase tracking-widest text-gray-400 border-t border-gray-100 pt-8">&copy; 2025 Redder Fashion Pvt Ltd.</div>
+    </footer>
+
+    <div id="toast"></div>
+
+    <script>
+        // CRASH PREVENTER
+        window.onerror = function(msg, url, line) {
+            document.body.innerHTML = `<div style="padding:40px; text-align:center; font-family:sans-serif;">
+                <h2 style="color:#D90429;">System Error</h2>
+                <p>${msg}</p><p>Line: ${line}</p>
+            </div>`;
+        };
+
+        const app = {
+            state: {
+                view: 'home', user: null, cart: [], wishlist: [], activeCat: 'All', sort: 'featured', coupon: null,
+                // DISTINCT IMAGES FOR FLIP EFFECT
+                products: [
+                    { id: 1, name: "Crimson Banarasi Silk", price: 2499, oldPrice: 3999, cat: "Suit", sales: 150, img: "https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=600&q=80", img2: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=600&q=80" },
+                    { id: 2, name: "Emerald Floral Anarkali", price: 1899, oldPrice: 2299, cat: "Anarkali", sales: 80, img: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80", img2: "https://images.unsplash.com/photo-1596783074918-c84cb06531ca?auto=format&fit=crop&w=600&q=80" },
+                    { id: 3, name: "Midnight Blue Velvet", price: 3200, oldPrice: 3200, cat: "Co-ord", sales: 40, img: "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&w=600&q=80", img2: "https://images.unsplash.com/photo-1518049362265-d5b2a6467637?auto=format&fit=crop&w=600&q=80" },
+                    { id: 4, name: "Rose Pink Kurti", price: 1299, oldPrice: 1999, cat: "Kurti", sales: 300, img: "https://images.unsplash.com/photo-1605763240004-7e93b172d754?auto=format&fit=crop&w=600&q=80", img2: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?auto=format&fit=crop&w=600&q=80" },
+                    { id: 5, name: "Ivory Sharara Set", price: 4500, oldPrice: 6000, cat: "Suit", sales: 12, img: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80", img2: "https://images.unsplash.com/photo-1617114919297-3c8dd6caea94?auto=format&fit=crop&w=600&q=80" },
+                    { id: 6, name: "Cotton Daily Wear", price: 899, oldPrice: 1299, cat: "Suit", sales: 500, img: "https://images.unsplash.com/photo-1617114919297-3c8dd6caea94?auto=format&fit=crop&w=600&q=80", img2: "https://images.unsplash.com/photo-1550614000-4b9519e090a2?auto=format&fit=crop&w=600&q=80" },
+                    { id: 7, name: "Maroon Velvet Anarkali", price: 3800, oldPrice: 4500, cat: "Anarkali", sales: 45, img: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=600&q=80", img2: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80" },
+                    { id: 8, name: "Teal Modern Palazzo", price: 2200, oldPrice: 2500, cat: "Co-ord", sales: 90, img: "https://images.unsplash.com/photo-1518049362265-d5b2a6467637?auto=format&fit=crop&w=600&q=80", img2: "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&w=600&q=80" }
+                ]
+            },
+
+            init: function() {
+                this.renderNav();
+                this.router('home');
+                this.updateBadges();
+            },
+
+            // --- NAVIGATION ---
+            renderNav: function() {
+                const cats = ['All', 'Suit', 'Anarkali', 'Co-ord', 'Kurti'];
+                
+                // Desktop
+                document.getElementById('desktop-menu').innerHTML = cats.map(c => {
+                    const isActive = this.state.activeCat === c;
+                    const style = isActive ? "text-redder-900 border-b-2 border-redder-900" : "text-gray-500 hover:text-redder-900";
+                    return `<a href="#" onclick="app.filterCat('${c}')" class="pb-2 transition-all duration-300 ${style}">${c === 'All' ? 'New Arrivals' : c + 's'}</a>`;
+                }).join('');
+
+                // Mobile
+                document.getElementById('mobile-menu').innerHTML = cats.map(c => {
+                    const isActive = this.state.activeCat === c;
+                    const style = isActive ? "bg-redder-900 text-white border-redder-900" : "bg-white text-gray-500 border-gray-200";
+                    return `<button onclick="app.filterCat('${c}')" class="px-6 py-2.5 rounded-none border text-[10px] font-bold uppercase tracking-widest transition-all ${style}">${c === 'All' ? 'New Arrivals' : c + 's'}</button>`;
+                }).join('');
+            },
+
+            filterCat: function(c) {
+                this.state.activeCat = c;
+                this.renderNav();
+                this.router('home');
+            },
+
+            router: function(view) {
+                const root = document.getElementById('app-root');
+                window.scrollTo(0,0);
+                
+                if (view === 'home') this.renderHome(root);
+                else if (view === 'cart') this.renderCart(root);
+                else if (view === 'wishlist') this.renderWishlist(root);
+                else if (view === 'login') this.renderLogin(root);
+                else if (view === 'contact') this.renderContact(root);
+                else if (view === 'privacy') this.renderStatic(root, 'Privacy Policy');
+                else if (view === 'return') this.renderStatic(root, 'Return Policy');
+            },
+
+            // --- HOME ---
+            renderHome: function(root) {
+                let prods = [...this.state.products];
+                if (this.state.activeCat !== 'All') prods = prods.filter(p => p.cat === this.state.activeCat);
+                if (this.state.sort === 'low') prods.sort((a,b) => a.price - b.price);
+                if (this.state.sort === 'high') prods.sort((a,b) => b.price - a.price);
+
+                root.innerHTML = `
+                    <div class="relative h-[85vh] w-full bg-cover bg-center animate-fade-in" style="background-image: url('https://images.unsplash.com/photo-1596783074918-c84cb06531ca?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80');">
+                        <div class="absolute inset-0 bg-black/20"></div>
+                        <div class="absolute inset-0 hero-gradient flex items-end pb-24 pl-8 md:pl-32">
+                            <div class="text-white max-w-2xl animate-slide-up">
+                                <p class="text-xs font-bold uppercase tracking-[0.3em] mb-4 text-gold">Spring / Summer 2025</p>
+                                <h1 class="text-6xl md:text-8xl font-serif font-bold mb-8 leading-none">The Heritage<br>Collection.</h1>
+                                <button onclick="document.getElementById('grid').scrollIntoView({behavior:'smooth'})" class="bg-white text-redder-900 px-10 py-4 font-bold uppercase text-[11px] tracking-widest hover:bg-redder-900 hover:text-white transition duration-500">Explore Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="grid" class="max-w-7xl mx-auto px-6 py-24">
+                        <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                            <div>
+                                <h2 class="text-4xl font-serif font-bold text-gray-900 mb-2">Curated for You</h2>
+                                <p class="text-gray-500 text-sm font-light">Handpicked styles for the modern Indian woman.</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Sort By</span>
+                                <select onchange="app.state.sort=this.value; app.renderHome(document.getElementById('app-root'))" class="bg-transparent border-b border-gray-300 text-sm font-bold text-gray-800 py-1 focus:outline-none cursor-pointer">
+                                    <option value="featured">Featured</option>
+                                    <option value="low">Price: Low to High</option>
+                                    <option value="high">Price: High to Low</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+                            ${prods.map(p => this.productCard(p)).join('')}
+                        </div>
+                    </div>
+                `;
+            },
+
+            productCard: function(p) {
+                const inWish = this.state.wishlist.find(w => w.id === p.id);
+                return `
+                <div class="product-card group cursor-pointer transition-all duration-500">
+                    <div class="card-media bg-gray-100 mb-5 relative">
+                        <img src="${p.img}" class="img-front">
+                        <img src="${p.img2}" class="img-back">
+                        
+                        ${p.oldPrice > p.price ? `<span class="absolute top-4 left-0 bg-redder-600 text-white text-[9px] font-bold px-3 py-1.5 uppercase tracking-widest z-30">Sale</span>` : ''}
+                        
+                        <button onclick="app.toggleWish(${p.id})" class="absolute top-4 right-4 bg-white w-9 h-9 rounded-full flex items-center justify-center hover:text-redder-600 transition shadow-sm z-30 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 duration-300">
+                            <i class="${inWish ? 'fas text-redder-600' : 'far'} fa-heart"></i>
+                        </button>
+                        
+                        <button onclick="app.add(${p.id})" class="absolute bottom-0 left-0 w-full bg-white text-redder-900 py-4 font-bold uppercase text-[10px] tracking-widest translate-y-full group-hover:translate-y-0 transition duration-500 z-30 hover:bg-redder-900 hover:text-white">
+                            Add to Bag
+                        </button>
+                    </div>
+                    <div>
+                        <h3 class="font-serif text-lg text-gray-900 mb-1 group-hover:text-redder-800 transition">${p.name}</h3>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-2">${p.cat}</p>
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-900 font-bold">₹${p.price}</span>
+                            ${p.oldPrice > p.price ? `<span class="text-gray-400 line-through text-xs">₹${p.oldPrice}</span>` : ''}
+                        </div>
+                    </div>
+                </div>`;
+            },
+
+            // --- 3. CART & WISHLIST ---
+            renderCart: function(root) {
+                const cart = this.state.cart;
+                if(cart.length === 0) return root.innerHTML = `<div class="h-[60vh] flex flex-col items-center justify-center fade-in"><h2 class="text-3xl font-serif mb-4 text-gray-300">Your bag is empty</h2><button onclick="app.router('home')" class="border-b-2 border-redder-900 pb-1 text-redder-900 font-bold uppercase text-xs tracking-widest">Continue Shopping</button></div>`;
+                
+                let sub = cart.reduce((a,b)=>a+b.price,0);
+                let disc = this.state.coupon ? sub * 0.10 : 0;
+
+                root.innerHTML = `
+                    <div class="max-w-6xl mx-auto px-6 py-20 flex flex-col lg:flex-row gap-16 fade-in">
+                        <div class="w-full lg:w-2/3">
+                            <h2 class="text-3xl font-serif font-bold mb-10">Shopping Bag</h2>
+                            ${cart.map((item, i) => `
+                                <div class="flex gap-8 border-b border-gray-100 pb-8 mb-8">
+                                    <img src="${item.img}" class="w-32 h-40 object-cover">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between mb-2">
+                                            <h3 class="font-serif text-xl">${item.name}</h3>
+                                            <p class="font-bold">₹${item.price}</p>
+                                        </div>
+                                        <p class="text-xs text-gray-400 uppercase tracking-widest mb-6">${item.cat} | Size: M</p>
+                                        <button onclick="app.remove(${i})" class="text-[10px] font-bold text-gray-400 hover:text-redder-600 underline uppercase tracking-widest">Remove Item</button>
+                                    </div>
+                                </div>`).join('')}
+                        </div>
+                        <div class="w-full lg:w-1/3">
+                            <div class="bg-gray-50 p-10">
+                                <h3 class="font-bold text-xs uppercase tracking-widest border-b border-gray-200 pb-4 mb-6">Order Summary</h3>
+                                <div class="flex justify-between mb-4 text-sm text-gray-600"><span>Subtotal</span><span>₹${sub}</span></div>
+                                <div class="flex justify-between mb-6 text-sm text-green-600"><span>Discount</span><span>-₹${Math.floor(disc)}</span></div>
+                                <div class="flex gap-2 mb-8"><input id="code" placeholder="REDDER10" class="w-full bg-white border border-gray-200 p-3 text-xs uppercase focus:outline-none"><button onclick="app.applyCode()" class="bg-gray-900 text-white px-6 text-[10px] font-bold uppercase tracking-widest">Apply</button></div>
+                                <div class="flex justify-between font-serif font-bold text-xl border-t border-gray-200 pt-6 mb-8"><span>Total</span><span>₹${Math.floor(sub-disc)}</span></div>
+                                <button onclick="alert('Order Placed!')" class="w-full bg-redder-900 text-white py-4 font-bold uppercase text-xs tracking-[0.2em] hover:bg-black transition duration-300">Checkout Securely</button>
+                            </div>
+                        </div>
+                    </div>`;
+            },
+
+            renderWishlist: function(root) {
+                const list = this.state.wishlist;
+                if(list.length === 0) return root.innerHTML = `<div class="h-[60vh] flex flex-col items-center justify-center fade-in"><h2 class="text-3xl font-serif mb-4 text-gray-300">Wishlist empty</h2><button onclick="app.router('home')" class="border-b-2 border-redder-900 pb-1 text-redder-900 font-bold uppercase text-xs tracking-widest">Explore Collection</button></div>`;
+                root.innerHTML = `<div class="max-w-7xl mx-auto px-6 py-20 fade-in"><h2 class="text-3xl font-serif font-bold mb-12 text-center">My Wishlist</h2><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">${list.map(p => this.productCard(p)).join('')}</div></div>`;
+            },
+
+            // --- 4. FORMS & PAGES ---
+            renderLogin: function(root) {
+                root.innerHTML = `
+                    <div class="max-w-md mx-auto py-24 px-6 fade-in">
+                        <div class="text-center mb-12"><h2 class="text-4xl font-serif font-bold mb-3">Welcome Back</h2><p class="text-gray-400 text-sm">Sign in to access your curated style.</p></div>
+                        <form onsubmit="event.preventDefault(); app.login();" class="space-y-6">
+                            <input type="text" placeholder="Full Name" class="w-full border-b border-gray-300 p-3 focus:outline-none focus:border-redder-900 transition bg-transparent placeholder-gray-400">
+                            <input type="email" placeholder="Email Address" class="w-full border-b border-gray-300 p-3 focus:outline-none focus:border-redder-900 transition bg-transparent placeholder-gray-400">
+                            <input type="password" placeholder="Password" class="w-full border-b border-gray-300 p-3 focus:outline-none focus:border-redder-900 transition bg-transparent placeholder-gray-400">
+                            <button type="submit" class="w-full bg-redder-900 text-white py-4 font-bold uppercase text-xs tracking-[0.2em] hover:bg-black transition mt-8">Sign In</button>
+                        </form>
+                    </div>`;
+            },
+
+            renderContact: function(root) {
+                root.innerHTML = `<div class="max-w-3xl mx-auto py-24 px-6 text-center fade-in"><h1 class="text-5xl font-serif font-bold mb-8">Get in Touch</h1><p class="mb-12 text-gray-500 font-light max-w-md mx-auto">We'd love to hear from you. Whether it's a customization request or feedback, we are here.</p><form class="space-y-6 max-w-md mx-auto text-left"><input type="text" placeholder="Name" class="w-full border p-4 text-sm bg-gray-50"><input type="email" placeholder="Email" class="w-full border p-4 text-sm bg-gray-50"><textarea placeholder="Message" class="w-full border p-4 text-sm bg-gray-50 h-32"></textarea><button class="w-full bg-black text-white py-4 font-bold uppercase text-xs tracking-widest">Send Message</button></form></div>`;
+            },
+
+            renderStatic: function(root, title) {
+                root.innerHTML = `<div class="max-w-3xl mx-auto py-24 px-6 fade-in"><h1 class="text-4xl font-serif font-bold mb-8">${title}</h1><div class="prose text-gray-500 font-light leading-relaxed space-y-6"><p>At Redder.in, we value your trust. This ${title} outlines how we operate with transparency and care.</p><p>We collect basic data to process orders. We accept returns within 7 days for unworn items with tags attached.</p><p>Refunds are processed within 5-7 business days to the original source of payment.</p></div><button onclick="app.router('home')" class="mt-12 text-redder-900 font-bold border-b border-redder-900 pb-1 text-xs uppercase tracking-widest">Back to Shop</button></div>`;
+            },
+
+            // --- 5. LOGIC UTILS ---
+            add: function(id) { this.state.cart.push(this.state.products.find(x => x.id === id)); this.updateBadges(); this.toast('Added to Bag'); },
+            remove: function(i) { this.state.cart.splice(i, 1); this.renderCart(document.getElementById('app-root')); this.updateBadges(); },
+            toggleWish: function(id) {
+                const idx = this.state.wishlist.findIndex(x => x.id === id);
+                if(idx === -1) { this.state.wishlist.push(this.state.products.find(x => x.id === id)); this.toast('Saved'); }
+                else { this.state.wishlist.splice(idx, 1); this.toast('Removed'); }
+                this.updateBadges();
+            },
+            login: function() { this.state.user = { name: "Guest" }; document.getElementById('auth-status').innerText = "Hi, Guest"; this.router('home'); this.toast('Welcome Back'); },
+            applyCode: function() { 
+                if(document.getElementById('code').value === 'REDDER10') { this.state.coupon = true; this.renderCart(document.getElementById('app-root')); this.toast('Code Applied'); } 
+                else alert('Invalid'); 
+            },
+            updateBadges: function() { 
+                document.getElementById('cart-badge').innerText = this.state.cart.length; 
+                document.getElementById('cart-badge').style.display = this.state.cart.length ? 'flex' : 'none';
+                document.getElementById('wish-badge').innerText = this.state.wishlist.length;
+                document.getElementById('wish-badge').style.display = this.state.wishlist.length ? 'flex' : 'none';
+            },
+            toast: function(m) { 
+                const t = document.getElementById('toast'); t.innerText = m; t.style.visibility = 'visible'; t.className = 'show fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded shadow-lg text-sm z-50';
+                setTimeout(() => t.style.visibility = 'hidden', 2000); 
+            }
+        };
+
+        // START APP
+        app.init();
+    </script>
+</body>
+</html>
