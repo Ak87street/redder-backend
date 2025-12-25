@@ -1,99 +1,92 @@
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
 const mongoose = require('mongoose');
-const Product = require('./models/Product'); 
-const Order = require('./models/Order'); 
+const cors = require('cors');
+const path = require('path');
 
-dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 10000; // Render uses 10000 by default
 
 // Middleware
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ MongoDB Connected! (Warehouse Open)'))
-    .catch(err => console.log('❌ MongoDB Error:', err));
+// =============================================================
+// 📸 THE FIX: SERVE THE IMAGE FOLDER
+// =============================================================
+// This tells the server: "If the link starts with /sub, look in the sub folder"
+app.use('/sub', express.static(path.join(__dirname, 'sub')));
 
-// --- API ROUTES ---
-
-// 1. GET Products (Shop)
-app.get('/api/products', async (req, res) => {
-    try {
-        const products = await Product.find(); 
-        res.json(products); 
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// 2. POST Product (Admin)
-app.post('/api/products', async (req, res) => {
-    try {
-        const { name, price, category, image } = req.body;
-        const newProduct = new Product({ name, price, category, image });
-        await newProduct.save(); 
-        res.status(201).json(newProduct);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// 3. POST Order (Checkout)
-app.post('/api/orders', async (req, res) => {
-    try {
-        console.log("📥 New Order Received:", req.body);
-        
-        const { customerName, address, phone, items, totalAmount } = req.body;
-        const newOrder = new Order({ customerName, address, phone, items, totalAmount });
-        await newOrder.save();
-        
-        res.status(201).json({ message: "Order Placed Successfully!" });
-    } catch (err) {
-        console.log("❌ Order Error:", err.message);
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// 4. GET Orders (Dashboard)
-app.get('/api/orders', async (req, res) => {
-    try {
-        const orders = await Order.find().sort({ date: -1 });
-        res.json(orders);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// 5. DELETE Order (Dashboard Cleanup)
-app.delete('/api/orders/:id', async (req, res) => {
-    try {
-        await Order.findByIdAndDelete(req.params.id);
-        res.json({ message: "Order Deleted!" });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// --- FRONTEND ROUTES ---
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
+// serve admin page
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
+// serve dashboard page
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
-// --- SERVER START (Updated for Cloud) ---
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`🚀 Redder Shop is LIVE at port ${PORT}`);
+// Database Connection
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('✅ MongoDB Connected!'))
+    .catch(err => console.error('❌ DB Connection Error:', err));
+
+// Schemas
+const productSchema = new mongoose.Schema({
+    name: String,
+    price: Number,
+    category: String,
+    image: String
 });
+const Product = mongoose.model('Product', productSchema);
+
+const orderSchema = new mongoose.Schema({
+    customerName: String,
+    address: String,
+    phone: String,
+    items: Array,
+    totalAmount: Number,
+    date: { type: Date, default: Date.now }
+});
+const Order = mongoose.model('Order', orderSchema);
+
+// API Routes
+app.get('/api/products', async (req, res) => {
+    const products = await Product.find();
+    res.json(products);
+});
+
+app.post('/api/products', async (req, res) => {
+    const newProduct = new Product(req.body);
+    await newProduct.save();
+    res.json(newProduct);
+});
+
+app.post('/api/orders', async (req, res) => {
+    try {
+        const newOrder = new Order(req.body);
+        await newOrder.save();
+        res.status(200).json(newOrder);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to save order" });
+    }
+});
+
+app.get('/api/orders', async (req, res) => {
+    const orders = await Order.find().sort({ date: -1 });
+    res.json(orders);
+});
+
+app.delete('/api/orders/:id', async (req, res) => {
+    await Order.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted" });
+});
+
+// Serve the Main Shop (Index)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Start Server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
