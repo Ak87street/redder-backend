@@ -513,7 +513,7 @@
                 btn.innerText = "OPENING WHATSAPP..."; 
                 btn.disabled = true;
 
-                fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }).catch(e => console.log("Backend offline"));
+                
 
                 // 3. UPDATE UI
                 document.getElementById('success-order-id').innerText = "#" + orderId;
