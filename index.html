@@ -44,7 +44,9 @@
 </head>
 
 <body>
-    <div class="fixed top-0 w-full bg-[#b91c1c] text-white py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-center z-[70]">Private Selection — <span id="countdown">00:00:00</span></div>
+    <div class="fixed top-0 w-full bg-[#b91c1c] text-white py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-center z-[70]">
+        Complimentary Shipping on Prepaid Orders
+    </div>
     
     <nav id="navbar" class="fixed top-8 w-full z-50 h-16 flex items-center justify-between px-5 md:px-12 transition-all duration-300 border-b border-transparent">
         <div class="text-2xl font-serif font-bold text-[#b91c1c] tracking-tighter cursor-pointer flex-shrink-0" onclick="window.scrollTo(0,0)">REDDER<span class="text-stone-300">.</span></div>
@@ -294,7 +296,9 @@
 
         window.addEventListener('scroll', () => { const nav = document.getElementById('navbar'); if(window.scrollY > 20) nav.classList.add('nav-scrolled'); else nav.classList.remove('nav-scrolled'); document.querySelectorAll('.reveal').forEach(el => { if(el.getBoundingClientRect().top < window.innerHeight - 100) el.classList.add('active'); }); });
         
+        // --- 🚀 HISTORY API: THIS FIXES THE BACK BUTTON ISSUE ---
         window.onpopstate = (event) => {
+            // If any modal is active, close it (instead of going back to Google)
             if (document.getElementById('product-modal').classList.contains('active')) closeProductModal(true);
             else if (document.getElementById('cart-modal').classList.contains('active')) toggleCartModal(true);
             else if (document.getElementById('fav-modal').classList.contains('active')) toggleFavModal(true);
@@ -302,13 +306,16 @@
             else if (document.getElementById('track-modal').classList.contains('active')) toggleTrackModal(true);
         };
 
-        function pushModalState(id) { history.pushState({ modal: id }, null, ""); }
+        function pushModalState(id) {
+            // Tell the browser: "We are on a new page (fake page)"
+            history.pushState({ modal: id }, null, "");
+        }
+
+        // Generic Go Back Function
         function goBack() { history.back(); }
 
-        function startCountdown() { let h=4, m=0, s=0; const el = document.getElementById('countdown'); setInterval(() => { if(s>0) s--; else { if(m>0) {m--;s=59;} else {if(h>0) {h--;m=59;s=59;} else {h=4;m=0;s=0;}}} el.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }, 1000); }
         function imageError(img) { const currentSrc = img.src; if (currentSrc.endsWith('.jpg')) img.src = currentSrc.replace('.jpg', '.png'); else if (currentSrc.endsWith('.png')) img.src = currentSrc.replace('.png', '.jpeg'); else if (currentSrc.endsWith('.jpeg')) img.src = currentSrc.replace('.jpeg', '.JPG'); else if (currentSrc.endsWith('.JPG')) img.src = currentSrc.replace('.JPG', '.jpg.jpg'); else { img.src = 'https://via.placeholder.com/800x1100?text=Check+File+Name'; } }
         function init() { 
-            startCountdown(); 
             const saved = localStorage.getItem('redderUser'); if(saved) { currentUser = JSON.parse(saved); document.getElementById('checkout-name').value = currentUser.name; document.getElementById('checkout-phone').value = currentUser.phone; document.getElementById('checkout-address').value = currentUser.address; } 
             const savedFavs = localStorage.getItem('redderFavs'); if(savedFavs) { favs = JSON.parse(savedFavs); updateFavUI(); } 
             const savedCoupons = localStorage.getItem(COUPON_STORAGE_KEY); if(savedCoupons) { redeemedCoupons = JSON.parse(savedCoupons); }
