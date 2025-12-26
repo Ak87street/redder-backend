@@ -19,50 +19,30 @@
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #fff; color: #1a1a1a; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .font-serif { font-family: 'Playfair Display', serif; }
-        
-        /* Smooth Reveal Animation */
         .reveal { opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
-        
-        /* Modal Transitions */
         .modal { transition: visibility 0.3s, opacity 0.3s ease; visibility: hidden; opacity: 0; }
         .modal.active { visibility: visible; opacity: 1; }
         .slide-panel { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.7, 0, 0.3, 1); }
         .modal.active .slide-panel { transform: translateX(0); }
-        
-        /* Buttons */
         .btn-primary { background: #b91c1c; color: white; transition: all 0.2s; border: 1px solid #b91c1c; }
         .btn-primary:active { transform: scale(0.98); }
-        
-        /* Size Buttons */
         .size-btn { border: 1px solid #e5e7eb; transition: 0.2s; }
         .size-btn.selected { border-color: #b91c1c; color: #b91c1c; font-weight: 700; background: #fff5f5; }
         .size-btn:disabled { opacity: 0.2; text-decoration: line-through; cursor: not-allowed; }
-        
-        /* Navbar Scroll Effect */
         .nav-scrolled { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); height: 60px !important; border-bottom: 1px solid #f3f4f6; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        
-        /* Custom Scrollbar */
         .scrollbar-thin::-webkit-scrollbar { width: 4px; }
         .scrollbar-thin::-webkit-scrollbar-track { background: #f1f1f1; }
         .scrollbar-thin::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
-        
-        /* Form Styles */
         .input-field { width: 100%; border: 1px solid #e5e7eb; padding: 14px; margin-bottom: 12px; font-size: 16px; outline: none; transition: border-color 0.2s; border-radius: 4px; appearance: none; }
         .input-field:focus { border-color: #b91c1c; }
-        
-        /* Payment Options */
         .payment-option { border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; border-radius: 4px; }
         .payment-option.selected { border-color: #b91c1c; background: #fff5f5; }
         .payment-circle { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #ddd; position: relative; }
         .payment-option.selected .payment-circle { border-color: #b91c1c; }
         .payment-option.selected .payment-circle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 8px; height: 8px; background: #b91c1c; border-radius: 50%; }
-
-        /* Sold Out Styling */
         .sold-out-overlay { filter: grayscale(100%) opacity(0.6); pointer-events: none; }
         img[alt]:after { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #f0f0f0; content: 'Image Not Found'; text-align: center; padding-top: 50%; color: red; font-size: 10px; }
-        
-        /* Table Styles */
         .size-table { w-full text-xs text-center border-collapse; }
         .size-table th { background: #f9fafb; padding: 10px; border: 1px solid #e5e7eb; font-weight: 700; }
         .size-table td { padding: 10px; border: 1px solid #e5e7eb; }
@@ -210,10 +190,14 @@
             <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"><i class="fa-solid fa-check text-2xl text-green-600"></i></div>
             <h3 class="text-2xl font-serif italic mb-2 text-[#b91c1c]">Order Confirmed</h3>
             <p id="payment-status-msg" class="text-xs text-stone-500 mb-8 uppercase tracking-widest">Thank you for choosing Redder.</p>
-            <div id="upi-pay-section" class="hidden mb-8">
-                <a id="upi-link-btn" href="#" class="bg-black text-white px-6 py-4 rounded-md text-xs font-bold uppercase tracking-widest block w-full shadow-lg">Pay Now via UPI</a>
-                <p class="text-[9px] text-stone-400 mt-3">Tap to open GPay / PhonePe / Paytm</p>
+            
+            <div class="mb-8">
+                <a id="wa-link-btn" href="#" target="_blank" class="bg-[#25D366] text-white px-6 py-4 rounded-md text-xs font-bold uppercase tracking-widest block w-full shadow-lg hover:bg-green-600 transition-colors">
+                    <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Send Order on WhatsApp
+                </a>
+                <p class="text-[9px] text-stone-400 mt-3">Click if WhatsApp didn't open automatically</p>
             </div>
+
             <div class="bg-stone-50 p-6 rounded-sm mb-6 text-left border border-stone-100">
                 <p class="text-[9px] font-bold uppercase text-stone-400 mb-1">Order ID</p>
                 <p id="success-order-id" class="font-mono text-lg font-bold mb-4 text-stone-800">#------</p>
@@ -278,7 +262,7 @@
     <div id="fav-modal" class="modal fixed inset-0 z-[100] flex justify-end bg-black/50 backdrop-blur-sm"><div class="slide-panel bg-white w-full max-w-md h-full p-6 flex flex-col shadow-2xl"><div class="flex justify-between items-center mb-6 border-b pb-4 text-[#b91c1c]"><h3 class="text-xl font-serif italic">Favorites</h3><button onclick="goBack()" class="text-2xl w-8 h-8">&times;</button></div><div id="fav-items" class="flex-1 overflow-y-auto space-y-4 scrollbar-thin"></div></div></div>
 
     <script>
-        const MY_UPI_ID = "upi31908@pingpay"; 
+        const MY_UPI_ID = "918527007740@paytm"; 
         
         // 🔒 SECURE COUPON LIST
         const COUPONS = { 
@@ -320,9 +304,7 @@
 
         window.addEventListener('scroll', () => { const nav = document.getElementById('navbar'); if(window.scrollY > 20) nav.classList.add('nav-scrolled'); else nav.classList.remove('nav-scrolled'); document.querySelectorAll('.reveal').forEach(el => { if(el.getBoundingClientRect().top < window.innerHeight - 100) el.classList.add('active'); }); });
         
-        // --- 🚀 HISTORY API: THIS FIXES THE BACK BUTTON ISSUE ---
         window.onpopstate = (event) => {
-            // If any modal is active, close it (instead of going back to Google)
             if (document.getElementById('product-modal').classList.contains('active')) closeProductModal(true);
             else if (document.getElementById('cart-modal').classList.contains('active')) toggleCartModal(true);
             else if (document.getElementById('fav-modal').classList.contains('active')) toggleFavModal(true);
@@ -330,12 +312,7 @@
             else if (document.getElementById('track-modal').classList.contains('active')) toggleTrackModal(true);
         };
 
-        function pushModalState(id) {
-            // Tell the browser: "We are on a new page (fake page)"
-            history.pushState({ modal: id }, null, "");
-        }
-
-        // Generic Go Back Function
+        function pushModalState(id) { history.pushState({ modal: id }, null, ""); }
         function goBack() { history.back(); }
 
         function imageError(img) { const currentSrc = img.src; if (currentSrc.endsWith('.jpg')) img.src = currentSrc.replace('.jpg', '.png'); else if (currentSrc.endsWith('.png')) img.src = currentSrc.replace('.png', '.jpeg'); else if (currentSrc.endsWith('.jpeg')) img.src = currentSrc.replace('.jpeg', '.JPG'); else if (currentSrc.endsWith('.JPG')) img.src = currentSrc.replace('.JPG', '.jpg.jpg'); else { img.src = 'https://via.placeholder.com/800x1100?text=Check+File+Name'; } }
@@ -361,7 +338,6 @@
             
             items.forEach((p, idx) => { 
                 const imgSrc = p.imageBase + ".jpg"; 
-                // FIX 1: Robust favorites check
                 const isFav = favs.includes(p.id); 
                 const totalStock = Object.values(p.sizeStock).reduce((a,b) => a+b, 0); const isSoldOut = totalStock === 0; const priceDisplay = p.mrp ? `<span class="text-[10px] text-stone-400 line-through mr-2">${p.mrp}</span><span class="text-xs font-bold tracking-[0.1em] text-[#b91c1c]">${p.price}</span>` : `<span class="text-xs font-bold tracking-[0.1em] text-[#b91c1c]">${p.price}</span>`; const imgClass = isSoldOut ? 'sold-out-overlay' : 'group-hover:scale-105'; const badge = isSoldOut ? `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white text-[9px] font-bold px-3 py-2 uppercase tracking-widest border border-white z-20">Sold Out</div>` : ''; 
                 
@@ -383,24 +359,12 @@
             if(items.length === 0) { grid.innerHTML = `<div class="col-span-4 text-center py-20 text-stone-300 font-serif italic text-2xl">Narrative not found.</div>`; } 
         }
 
-        // FIX 2: IMPROVED TOGGLE FAV FUNCTION
         function toggleFav(id) {
-            // 1. Get current list
             let index = favs.indexOf(id);
-            
-            // 2. Toggle
-            if (index === -1) {
-                favs.push(id);
-            } else {
-                favs.splice(index, 1);
-            }
-            
-            // 3. Save to LocalStorage IMMEDIATELY
+            if (index === -1) { favs.push(id); } else { favs.splice(index, 1); }
             localStorage.setItem('redderFavs', JSON.stringify(favs));
-            
-            // 4. Update UI
             updateFavUI();
-            renderProducts(); // Re-draw hearts on grid
+            renderProducts(); 
         }
 
         function updateFavUI() { 
@@ -408,10 +372,8 @@
             const badge = document.getElementById('fav-count-badge'); 
             badge.innerText = count; 
             badge.style.opacity = count > 0 ? '1' : '0'; 
-            
             const list = document.getElementById('fav-items'); 
             list.innerHTML = count === 0 ? '<p class="text-center text-xs text-stone-400">No favorites yet.</p>' : ''; 
-            
             favs.forEach(fid => { 
                 const item = MY_COLLECTION.find(p => p.id === fid); 
                 if(item) { 
@@ -520,7 +482,6 @@
         function addToBag() { cart.push({...MY_COLLECTION[activeIdx], selectedSize}); updateCartUI(); closeProductModal(); toggleCartModal(); }
         document.getElementById('modal-add-btn').onclick = addToBag;
 
-        // FIX 3: WHATSAPP ORDERING SYSTEM (THE "SMS REPLACEMENT")
         async function placeOrder() {
             if(!cart.length) return alert("Your bag is empty.");
             
@@ -538,23 +499,27 @@
                 if(!confirmed) return;
             }
 
+            // 1. GENERATE RANDOM ORDER ID
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            const orderId = "RED-" + randomNum;
+
             localStorage.setItem('redderUser', JSON.stringify({ name, phone, address }));
 
-            // 1. SAVE TO DATABASE (Backup)
-            const orderData = { customerName: name, address: address, phone: phone, items: cart, totalAmount: total, paymentMethod: payment, coupon: couponUsed };
+            // 2. SAVE TO DATABASE (Backup)
+            const orderData = { orderId: orderId, customerName: name, address: address, phone: phone, items: cart, totalAmount: total, paymentMethod: payment, coupon: couponUsed };
             
             try {
-                // Show loading
                 const btn = event.target; 
-                const originalText = btn.innerText;
                 btn.innerText = "OPENING WHATSAPP..."; 
                 btn.disabled = true;
 
-                // Send to backend (silent backup)
-                fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
+                fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }).catch(e => console.log("Backend offline"));
 
-                // 2. CONSTRUCT WHATSAPP MESSAGE (The "Instant SMS" for You)
-                let msg = `*NEW ORDER ALERT* 🚨\n\n`;
+                // 3. UPDATE UI
+                document.getElementById('success-order-id').innerText = "#" + orderId;
+
+                // 4. CONSTRUCT WHATSAPP MESSAGE
+                let msg = `*NEW ORDER: ${orderId}* 🚨\n\n`;
                 msg += `*Name:* ${name}\n`;
                 msg += `*Phone:* ${phone}\n`;
                 msg += `*Total:* ₹${total} (${payment})\n`;
@@ -566,25 +531,27 @@
                 
                 if(couponUsed) msg += `\n*Code Used:* ${couponUsed}`;
 
-                // 3. OPEN WHATSAPP LINK
                 const encodedMsg = encodeURIComponent(msg);
-                // ⚠️ REPLACE THIS NUMBER WITH YOUR OWN PHONE NUMBER (e.g. 919999999999)
                 const myNumber = "918527007740"; 
-                const waLink = `https://wa.me/${myNumber}?text=${encodedMsg}`;
+                // Using API link is more robust on mobile
+                const waLink = `https://api.whatsapp.com/send?phone=${myNumber}&text=${encodedMsg}`;
 
-                // Mark coupon as used locally
+                // Set Backup Button Link
+                document.getElementById('wa-link-btn').href = waLink;
+
                 if(couponUsed && COUPONS.hasOwnProperty(couponUsed)) {
                     redeemedCoupons.push(couponUsed);
                     localStorage.setItem(COUPON_STORAGE_KEY, JSON.stringify(redeemedCoupons));
                 }
 
-                // Redirect user to WhatsApp to "Send" the order to you
-                setTimeout(() => {
-                    window.location.href = waLink;
-                    // Reset UI
-                    cart = []; appliedDiscount = 0; updateCartUI(); toggleCartModal();
-                    document.getElementById('success-modal').classList.add('active');
-                }, 1000);
+                // 5. INSTANT REDIRECT (NO TIMEOUT)
+                window.location.href = waLink;
+
+                // 6. SHOW SUCCESS MODAL (IN BACKGROUND)
+                cart = []; appliedDiscount = 0; updateCartUI(); toggleCartModal();
+                document.getElementById('success-modal').classList.add('active');
+                btn.innerText = "Confirm Order"; 
+                btn.disabled = false;
 
             } catch (err) { 
                 console.error("Order error", err); 
