@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>REDDER | Luxury Ethnic Narrative</title>
+    
+    <meta property="og:title" content="REDDER | Luxury Ethnic Narrative">
+    <meta property="og:description" content="Discover Gurgaon's premiere designer house for ethnic suits and co-ord sets. Complimentary shipping on prepaid orders.">
+    <meta property="og:image" content="https://redder.in/sub/3.jpg">
+    <meta property="og:url" content="https://redder.in">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="sub/logo.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,32 +19,50 @@
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #fff; color: #1a1a1a; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .font-serif { font-family: 'Playfair Display', serif; }
+        
+        /* Smooth Reveal Animation */
         .reveal { opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        /* Modal Transitions */
         .modal { transition: visibility 0.3s, opacity 0.3s ease; visibility: hidden; opacity: 0; }
         .modal.active { visibility: visible; opacity: 1; }
         .slide-panel { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.7, 0, 0.3, 1); }
         .modal.active .slide-panel { transform: translateX(0); }
+        
+        /* Buttons */
         .btn-primary { background: #b91c1c; color: white; transition: all 0.2s; border: 1px solid #b91c1c; }
         .btn-primary:active { transform: scale(0.98); }
+        
+        /* Size Buttons */
         .size-btn { border: 1px solid #e5e7eb; transition: 0.2s; }
         .size-btn.selected { border-color: #b91c1c; color: #b91c1c; font-weight: 700; background: #fff5f5; }
         .size-btn:disabled { opacity: 0.2; text-decoration: line-through; cursor: not-allowed; }
+        
+        /* Navbar Scroll Effect */
         .nav-scrolled { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); height: 60px !important; border-bottom: 1px solid #f3f4f6; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        
+        /* Custom Scrollbar */
         .scrollbar-thin::-webkit-scrollbar { width: 4px; }
         .scrollbar-thin::-webkit-scrollbar-track { background: #f1f1f1; }
         .scrollbar-thin::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
+        
+        /* Form Styles */
         .input-field { width: 100%; border: 1px solid #e5e7eb; padding: 14px; margin-bottom: 12px; font-size: 16px; outline: none; transition: border-color 0.2s; border-radius: 4px; appearance: none; }
         .input-field:focus { border-color: #b91c1c; }
+        
+        /* Payment Options */
         .payment-option { border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; border-radius: 4px; }
         .payment-option.selected { border-color: #b91c1c; background: #fff5f5; }
         .payment-circle { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #ddd; position: relative; }
         .payment-option.selected .payment-circle { border-color: #b91c1c; }
         .payment-option.selected .payment-circle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 8px; height: 8px; background: #b91c1c; border-radius: 50%; }
+
+        /* Sold Out Styling */
         .sold-out-overlay { filter: grayscale(100%) opacity(0.6); pointer-events: none; }
         img[alt]:after { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #f0f0f0; content: 'Image Not Found'; text-align: center; padding-top: 50%; color: red; font-size: 10px; }
         
-        /* Table Styles for Size Chart */
+        /* Table Styles */
         .size-table { w-full text-xs text-center border-collapse; }
         .size-table th { background: #f9fafb; padding: 10px; border: 1px solid #e5e7eb; font-weight: 700; }
         .size-table td { padding: 10px; border: 1px solid #e5e7eb; }
@@ -255,16 +281,14 @@
         const MY_UPI_ID = "upi31908@pingpay"; 
         
         // 🔒 SECURE COUPON LIST
-        // Format: "CODE": Amount (if > 1) OR Percentage (if < 1)
-        // Add new refund codes here manually!
         const COUPONS = { 
             "WELCOME10": 0.10,      // 10% Off
             "REDDER500": 500,       // ₹500 Flat Off
-            // Example: "REFUND-ORDER123": 2000 
         };
         
         const COUPON_STORAGE_KEY = 'redder_coupons_redeemed';
 
+        // --- MASTER COLLECTION ---
         const MY_COLLECTION = [
             { id: 1, name: "Peplum Top with Palazzo set", price: "₹900", mrp: "₹1,499", rawPrice: 900, category: "Co-ords", imageBase: "sub/1", tag: "Bestseller", description: `This is our signature bestseller, crafted for the modern woman who values both tradition and comfort.\n\nThe Narrative:\nMade with high-quality Dobby Chiffon fabric, this set offers breathable comfort ideal for long festive evenings. The peplum silhouette provides a flattering fit for all body types, while the palazzo adds a touch of contemporary flair.\n\nProduct Details\nMaterial: Dobby Chiffon\nFit: Regular\nStyle: Peplum Co-ord Set\nClosure: Pull On\nCare Instructions: Hand Wash Only.`, sizeStock: { "S": 0, "M": 1, "L": 1, "XL": 0 } },
             { id: 2, name: "Thread work chanderi silk kurta set.", price: "₹1,700", mrp: "₹2,899", rawPrice: 1700, category: "Suits", imageBase: "sub/2", tag: "New", description: `Thread work chanderi silk kurta set\nProduct Details\nOff white, red and gold-toned printed kurta with trousers with dupatta\n\nKurta design:\n◦ Geometric printed\n◦ A-line shape\n◦ Panelled style\n◦ Notch neck, three-quarter regular sleeves\n◦ Thread work detail\n◦ Calf length with flared hem\n○ Chanderi silk machine weave fabric\nTrousers design:\n◦Solid trousers\n◦ Partially elasticated waistband\nSlip-on closure\nDupatta design:\n◦ Solid dupatta\n◦ Taping borders\n\nMaterial\nTop fabric: Chanderi Silk\nBottom fabric: chanderi silk.`, sizeStock: { "S": 0, "M": 1, "L": 1, "XL": 0 } },
@@ -315,6 +339,7 @@
         function goBack() { history.back(); }
 
         function imageError(img) { const currentSrc = img.src; if (currentSrc.endsWith('.jpg')) img.src = currentSrc.replace('.jpg', '.png'); else if (currentSrc.endsWith('.png')) img.src = currentSrc.replace('.png', '.jpeg'); else if (currentSrc.endsWith('.jpeg')) img.src = currentSrc.replace('.jpeg', '.JPG'); else if (currentSrc.endsWith('.JPG')) img.src = currentSrc.replace('.JPG', '.jpg.jpg'); else { img.src = 'https://via.placeholder.com/800x1100?text=Check+File+Name'; } }
+        
         function init() { 
             const saved = localStorage.getItem('redderUser'); if(saved) { currentUser = JSON.parse(saved); document.getElementById('checkout-name').value = currentUser.name; document.getElementById('checkout-phone').value = currentUser.phone; document.getElementById('checkout-address').value = currentUser.address; } 
             const savedFavs = localStorage.getItem('redderFavs'); if(savedFavs) { favs = JSON.parse(savedFavs); updateFavUI(); } 
@@ -325,9 +350,82 @@
         function handleSort(val) { currentSort = val; renderProducts(); }
         function handleSearch(val) { searchTerm = val.toLowerCase(); renderProducts(); }
         function filterProducts(c) { currentFilter = c; document.querySelectorAll('.filter-btn').forEach(b => { if(b.innerText === c) b.classList.add('text-[#b91c1c]', 'border-b-2', 'border-[#b91c1c]'); else b.classList.remove('text-[#b91c1c]', 'border-b-2', 'border-[#b91c1c]'); }); renderProducts(); }
-        function renderProducts() { const grid = document.getElementById('product-grid'); grid.innerHTML = ''; let items = [...MY_COLLECTION]; if(currentFilter !== 'All') items = items.filter(i => i.category === currentFilter); if(searchTerm) { items = items.filter(i => i.name.toLowerCase().includes(searchTerm) || i.category.toLowerCase().includes(searchTerm)); } if(currentSort === 'lowhigh') items.sort((a,b) => a.rawPrice - b.rawPrice); else if(currentSort === 'highlow') items.sort((a,b) => b.rawPrice - a.rawPrice); items.forEach((p, idx) => { const imgSrc = p.imageBase + ".jpg"; const isFav = favs.includes(p.id); const totalStock = Object.values(p.sizeStock).reduce((a,b) => a+b, 0); const isSoldOut = totalStock === 0; const priceDisplay = p.mrp ? `<span class="text-[10px] text-stone-400 line-through mr-2">${p.mrp}</span><span class="text-xs font-bold tracking-[0.1em] text-[#b91c1c]">${p.price}</span>` : `<span class="text-xs font-bold tracking-[0.1em] text-[#b91c1c]">${p.price}</span>`; const imgClass = isSoldOut ? 'sold-out-overlay' : 'group-hover:scale-105'; const badge = isSoldOut ? `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white text-[9px] font-bold px-3 py-2 uppercase tracking-widest border border-white z-20">Sold Out</div>` : ''; grid.innerHTML += `<div class="reveal active group cursor-pointer" style="transition-delay: ${idx * 0.05}s"><div class="relative aspect-[3/4] overflow-hidden bg-stone-50 mb-3 rounded-sm" onclick="openProductModal(${MY_COLLECTION.indexOf(p)})"><img src="${imgSrc}" class="w-full h-full object-cover transition-transform duration-[1s] ${imgClass}" onerror="imageError(this)">${badge}<div class="absolute top-2 left-2 bg-[#b91c1c] text-white text-[7px] font-bold px-2 py-1 uppercase tracking-widest ${isSoldOut ? 'hidden' : ''}">${p.tag}</div><button onclick="event.stopPropagation(); toggleFav(${p.id})" class="absolute top-2 right-2 text-lg like-btn ${isFav ? 'liked' : 'text-stone-400'}"><i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i></button></div><h3 class="font-serif italic text-sm md:text-lg text-stone-900 group-hover:text-[#b91c1c] transition-colors mb-1 truncate">${p.name}</h3><p class="text-[8px] tracking-widest text-stone-300 font-bold uppercase mb-1">${p.category}</p><div class="flex items-center">${priceDisplay}</div></div>`; }); if(items.length === 0) { grid.innerHTML = `<div class="col-span-4 text-center py-20 text-stone-300 font-serif italic text-2xl">Narrative not found.</div>`; } }
-        function toggleFav(id) { if(favs.includes(id)) favs = favs.filter(i => i !== id); else favs.push(id); localStorage.setItem('redderFavs', JSON.stringify(favs)); updateFavUI(); renderProducts(); }
-        function updateFavUI() { const count = favs.length; const badge = document.getElementById('fav-count-badge'); badge.innerText = count; badge.style.opacity = count > 0 ? '1' : '0'; const list = document.getElementById('fav-items'); list.innerHTML = count === 0 ? '<p class="text-center text-xs text-stone-400">No favorites yet.</p>' : ''; favs.forEach(fid => { const item = MY_COLLECTION.find(p => p.id === fid); if(item) { list.innerHTML += `<div class="flex gap-4 items-center"><img src="${item.imageBase}.jpg" class="w-12 h-16 object-cover rounded-sm" onerror="imageError(this)"><div class="flex-1"><h4 class="font-serif italic text-sm">${item.name}</h4><p class="text-[9px] font-bold text-[#b91c1c]">${item.price}</p></div><button onclick="toggleFav(${item.id})" class="text-stone-400 hover:text-red-600"><i class="fa-solid fa-xmark"></i></button></div>`; } }); }
+        
+        function renderProducts() { 
+            const grid = document.getElementById('product-grid'); grid.innerHTML = ''; 
+            let items = [...MY_COLLECTION]; 
+            if(currentFilter !== 'All') items = items.filter(i => i.category === currentFilter); 
+            if(searchTerm) { items = items.filter(i => i.name.toLowerCase().includes(searchTerm) || i.category.toLowerCase().includes(searchTerm)); } 
+            if(currentSort === 'lowhigh') items.sort((a,b) => a.rawPrice - b.rawPrice); 
+            else if(currentSort === 'highlow') items.sort((a,b) => b.rawPrice - a.rawPrice); 
+            
+            items.forEach((p, idx) => { 
+                const imgSrc = p.imageBase + ".jpg"; 
+                // FIX 1: Robust favorites check
+                const isFav = favs.includes(p.id); 
+                const totalStock = Object.values(p.sizeStock).reduce((a,b) => a+b, 0); const isSoldOut = totalStock === 0; const priceDisplay = p.mrp ? `<span class="text-[10px] text-stone-400 line-through mr-2">${p.mrp}</span><span class="text-xs font-bold tracking-[0.1em] text-[#b91c1c]">${p.price}</span>` : `<span class="text-xs font-bold tracking-[0.1em] text-[#b91c1c]">${p.price}</span>`; const imgClass = isSoldOut ? 'sold-out-overlay' : 'group-hover:scale-105'; const badge = isSoldOut ? `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white text-[9px] font-bold px-3 py-2 uppercase tracking-widest border border-white z-20">Sold Out</div>` : ''; 
+                
+                grid.innerHTML += `
+                <div class="reveal active group cursor-pointer" style="transition-delay: ${idx * 0.05}s">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-stone-50 mb-3 rounded-sm" onclick="openProductModal(${MY_COLLECTION.indexOf(p)})">
+                        <img src="${imgSrc}" class="w-full h-full object-cover transition-transform duration-[1s] ${imgClass}" onerror="imageError(this)">
+                        ${badge}
+                        <div class="absolute top-2 left-2 bg-[#b91c1c] text-white text-[7px] font-bold px-2 py-1 uppercase tracking-widest ${isSoldOut ? 'hidden' : ''}">${p.tag}</div>
+                        <button onclick="event.stopPropagation(); toggleFav(${p.id})" class="absolute top-2 right-2 text-lg z-30 p-2 rounded-full bg-white/20 backdrop-blur-sm transition-colors duration-200">
+                            <i class="${isFav ? 'fa-solid text-[#b91c1c]' : 'fa-regular text-stone-600'} fa-heart"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-serif italic text-sm md:text-lg text-stone-900 group-hover:text-[#b91c1c] transition-colors mb-1 truncate">${p.name}</h3>
+                    <p class="text-[8px] tracking-widest text-stone-300 font-bold uppercase mb-1">${p.category}</p>
+                    <div class="flex items-center">${priceDisplay}</div>
+                </div>`; 
+            }); 
+            if(items.length === 0) { grid.innerHTML = `<div class="col-span-4 text-center py-20 text-stone-300 font-serif italic text-2xl">Narrative not found.</div>`; } 
+        }
+
+        // FIX 2: IMPROVED TOGGLE FAV FUNCTION
+        function toggleFav(id) {
+            // 1. Get current list
+            let index = favs.indexOf(id);
+            
+            // 2. Toggle
+            if (index === -1) {
+                favs.push(id);
+            } else {
+                favs.splice(index, 1);
+            }
+            
+            // 3. Save to LocalStorage IMMEDIATELY
+            localStorage.setItem('redderFavs', JSON.stringify(favs));
+            
+            // 4. Update UI
+            updateFavUI();
+            renderProducts(); // Re-draw hearts on grid
+        }
+
+        function updateFavUI() { 
+            const count = favs.length; 
+            const badge = document.getElementById('fav-count-badge'); 
+            badge.innerText = count; 
+            badge.style.opacity = count > 0 ? '1' : '0'; 
+            
+            const list = document.getElementById('fav-items'); 
+            list.innerHTML = count === 0 ? '<p class="text-center text-xs text-stone-400">No favorites yet.</p>' : ''; 
+            
+            favs.forEach(fid => { 
+                const item = MY_COLLECTION.find(p => p.id === fid); 
+                if(item) { 
+                    list.innerHTML += `<div class="flex gap-4 items-center mb-4 border-b border-stone-100 pb-2">
+                        <img src="${item.imageBase}.jpg" class="w-12 h-16 object-cover rounded-sm" onerror="imageError(this)">
+                        <div class="flex-1">
+                            <h4 class="font-serif italic text-sm">${item.name}</h4>
+                            <p class="text-[9px] font-bold text-[#b91c1c]">${item.price}</p>
+                        </div>
+                        <button onclick="toggleFav(${item.id})" class="text-stone-400 hover:text-red-600 px-2"><i class="fa-solid fa-xmark"></i></button>
+                    </div>`; 
+                } 
+            }); 
+        }
         
         function openProductModal(idx) { 
             const p = MY_COLLECTION[idx]; activeIdx = idx; selectedSize = null; 
@@ -367,34 +465,21 @@
             document.getElementById('selected-payment').value = method;
         }
 
-        // 🔒 SECURE COUPON LOGIC
         function applyCoupon() {
             const code = document.getElementById('coupon-input').value.trim().toUpperCase();
             const msgEl = document.getElementById('coupon-msg');
             msgEl.className = "text-[9px] mt-1 font-bold";
             
             if(!code) return;
-
-            // 1. Check if already used on this device
             if(redeemedCoupons.includes(code)) {
                 msgEl.innerText = "Code already redeemed on this device.";
                 msgEl.classList.add("text-red-600");
                 return;
             }
-
-            // 2. Check if code exists in your SECURE LIST
             if(COUPONS.hasOwnProperty(code)) {
                 const value = COUPONS[code];
-                
-                // If value < 1, it is a Percentage (e.g. 0.10)
-                if (value < 1) {
-                    appliedDiscount = Math.floor(cart.reduce((s,i)=>s+i.rawPrice,0) * value);
-                } 
-                // If value >= 1, it is a Flat Amount (e.g. 2000)
-                else {
-                    appliedDiscount = value;
-                }
-
+                if (value < 1) { appliedDiscount = Math.floor(cart.reduce((s,i)=>s+i.rawPrice,0) * value); } 
+                else { appliedDiscount = value; }
                 msgEl.innerText = "Code applied successfully.";
                 msgEl.classList.add("text-green-600");
             } else {
@@ -435,6 +520,7 @@
         function addToBag() { cart.push({...MY_COLLECTION[activeIdx], selectedSize}); updateCartUI(); closeProductModal(); toggleCartModal(); }
         document.getElementById('modal-add-btn').onclick = addToBag;
 
+        // FIX 3: WHATSAPP ORDERING SYSTEM (THE "SMS REPLACEMENT")
         async function placeOrder() {
             if(!cart.length) return alert("Your bag is empty.");
             
@@ -454,39 +540,56 @@
 
             localStorage.setItem('redderUser', JSON.stringify({ name, phone, address }));
 
+            // 1. SAVE TO DATABASE (Backup)
             const orderData = { customerName: name, address: address, phone: phone, items: cart, totalAmount: total, paymentMethod: payment, coupon: couponUsed };
-
+            
             try {
-                const btn = event.target; const originalText = btn.innerText;
-                btn.innerText = "PROCESSING..."; btn.disabled = true;
+                // Show loading
+                const btn = event.target; 
+                const originalText = btn.innerText;
+                btn.innerText = "OPENING WHATSAPP..."; 
+                btn.disabled = true;
 
-                const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
+                // Send to backend (silent backup)
+                fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('success-order-id').innerText = "#" + data._id.slice(-6).toUpperCase();
-                    
-                    if(couponUsed && COUPONS.hasOwnProperty(couponUsed)) {
-                        redeemedCoupons.push(couponUsed);
-                        localStorage.setItem(COUPON_STORAGE_KEY, JSON.stringify(redeemedCoupons));
-                    }
+                // 2. CONSTRUCT WHATSAPP MESSAGE (The "Instant SMS" for You)
+                let msg = `*NEW ORDER ALERT* 🚨\n\n`;
+                msg += `*Name:* ${name}\n`;
+                msg += `*Phone:* ${phone}\n`;
+                msg += `*Total:* ₹${total} (${payment})\n`;
+                msg += `*Address:* ${address}\n\n`;
+                msg += `*Items:*\n`;
+                cart.forEach(item => {
+                    msg += `- ${item.name} (${item.selectedSize}) - ₹${item.rawPrice}\n`;
+                });
+                
+                if(couponUsed) msg += `\n*Code Used:* ${couponUsed}`;
 
-                    if(payment === 'UPI') {
-                        document.getElementById('upi-pay-section').classList.remove('hidden');
-                        const upiLink = `upi://pay?pa=${MY_UPI_ID}&pn=REDDER&am=${total}&cu=INR`;
-                        document.getElementById('upi-link-btn').href = upiLink;
-                        window.location.href = upiLink;
-                    } else {
-                        document.getElementById('upi-pay-section').classList.add('hidden');
-                    }
+                // 3. OPEN WHATSAPP LINK
+                const encodedMsg = encodeURIComponent(msg);
+                // ⚠️ REPLACE THIS NUMBER WITH YOUR OWN PHONE NUMBER (e.g. 919999999999)
+                const myNumber = "918527007740"; 
+                const waLink = `https://wa.me/${myNumber}?text=${encodedMsg}`;
 
-                    document.getElementById('success-modal').classList.add('active');
-                    toggleCartModal();
-                    cart = []; appliedDiscount = 0; updateCartUI();
-                } else {
-                    alert("Connection failed."); btn.innerText = originalText; btn.disabled = false;
+                // Mark coupon as used locally
+                if(couponUsed && COUPONS.hasOwnProperty(couponUsed)) {
+                    redeemedCoupons.push(couponUsed);
+                    localStorage.setItem(COUPON_STORAGE_KEY, JSON.stringify(redeemedCoupons));
                 }
-            } catch (err) { console.error("Order error", err); alert("Server Error."); }
+
+                // Redirect user to WhatsApp to "Send" the order to you
+                setTimeout(() => {
+                    window.location.href = waLink;
+                    // Reset UI
+                    cart = []; appliedDiscount = 0; updateCartUI(); toggleCartModal();
+                    document.getElementById('success-modal').classList.add('active');
+                }, 1000);
+
+            } catch (err) { 
+                console.error("Order error", err); 
+                alert("Server Error. Please try again."); 
+            }
         }
         
         function openPolicy(type) { 
