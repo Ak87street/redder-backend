@@ -2,169 +2,238 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>REDDER | Luxury Ethnic Narrative</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        body { font-family: 'Montserrat', sans-serif; background-color: #fff; color: #1a1a1a; overflow-x: hidden; }
+        body { font-family: 'Montserrat', sans-serif; background-color: #fff; color: #1a1a1a; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .font-serif { font-family: 'Playfair Display', serif; }
+        
+        /* Smooth Reveal Animation */
         .reveal { opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        /* Modal Transitions */
         .modal { transition: visibility 0.3s, opacity 0.3s ease; visibility: hidden; opacity: 0; }
         .modal.active { visibility: visible; opacity: 1; }
         .slide-panel { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.7, 0, 0.3, 1); }
         .modal.active .slide-panel { transform: translateX(0); }
+        
+        /* Buttons */
         .btn-primary { background: #b91c1c; color: white; transition: all 0.2s; border: 1px solid #b91c1c; }
-        .btn-primary:hover { background: #fff; color: #b91c1c; }
+        .btn-primary:active { transform: scale(0.98); }
+        
+        /* Size Buttons */
         .size-btn { border: 1px solid #e5e7eb; transition: 0.2s; }
         .size-btn.selected { border-color: #b91c1c; color: #b91c1c; font-weight: 700; background: #fff5f5; }
         .size-btn:disabled { opacity: 0.2; text-decoration: line-through; cursor: not-allowed; }
-        .nav-scrolled { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); height: 60px !important; border-bottom: 1px solid #f3f4f6; }
-        .like-btn { transition: transform 0.2s; }
-        .like-btn:active { transform: scale(1.3); }
-        .liked { color: #b91c1c !important; }
-        .sold-out-overlay { filter: grayscale(100%) opacity(0.6); pointer-events: none; }
+        
+        /* Navbar Scroll Effect */
+        .nav-scrolled { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); height: 60px !important; border-bottom: 1px solid #f3f4f6; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        
+        /* Custom Scrollbar */
         .scrollbar-thin::-webkit-scrollbar { width: 4px; }
         .scrollbar-thin::-webkit-scrollbar-track { background: #f1f1f1; }
         .scrollbar-thin::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
-        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #b91c1c; }
-        img[alt]:after { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #f0f0f0; content: 'Image Not Found'; text-align: center; padding-top: 50%; color: red; font-size: 10px; }
         
-        .input-field { width: 100%; border: 1px solid #e5e7eb; padding: 12px; margin-bottom: 10px; font-size: 11px; outline: none; transition: border-color 0.2s; }
+        /* Form Styles - optimized for mobile inputs */
+        .input-field { width: 100%; border: 1px solid #e5e7eb; padding: 14px; margin-bottom: 12px; font-size: 16px; outline: none; transition: border-color 0.2s; border-radius: 4px; appearance: none; }
         .input-field:focus { border-color: #b91c1c; }
-        .payment-option { border: 1px solid #e5e7eb; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+        
+        /* Payment Options */
+        .payment-option { border: 1px solid #e5e7eb; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; border-radius: 4px; }
         .payment-option.selected { border-color: #b91c1c; background: #fff5f5; }
-        .payment-circle { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #ddd; position: relative; }
+        .payment-circle { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #ddd; position: relative; }
         .payment-option.selected .payment-circle { border-color: #b91c1c; }
-        .payment-option.selected .payment-circle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 6px; height: 6px; background: #b91c1c; border-radius: 50%; }
+        .payment-option.selected .payment-circle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 8px; height: 8px; background: #b91c1c; border-radius: 50%; }
+
+        /* Sold Out Styling */
+        .sold-out-overlay { filter: grayscale(100%) opacity(0.6); pointer-events: none; }
+        img[alt]:after { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #f0f0f0; content: 'Image Not Found'; text-align: center; padding-top: 50%; color: red; font-size: 10px; }
     </style>
 </head>
 
 <body>
-    <div class="fixed top-0 w-full bg-[#b91c1c] text-white py-1.5 text-[9px] font-bold uppercase tracking-[0.2em] text-center z-[70]">Private Selection — <span id="countdown">00:00:00</span></div>
-    <nav id="navbar" class="fixed top-7 w-full z-50 h-16 flex items-center justify-between px-6 md:px-12 transition-all duration-500 border-b border-transparent">
+    <div class="fixed top-0 w-full bg-[#b91c1c] text-white py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-center z-[70]">Private Selection — <span id="countdown">00:00:00</span></div>
+    
+    <nav id="navbar" class="fixed top-8 w-full z-50 h-16 flex items-center justify-between px-5 md:px-12 transition-all duration-300 border-b border-transparent">
         <div class="text-2xl font-serif font-bold text-[#b91c1c] tracking-tighter cursor-pointer flex-shrink-0" onclick="window.scrollTo(0,0)">REDDER<span class="text-stone-300">.</span></div>
-        <div class="flex items-center gap-6">
-            <button onclick="toggleFavModal()" class="relative group p-1"><i class="fa-regular fa-heart text-xl hover:text-[#b91c1c] transition-colors"></i><span id="fav-count-badge" class="absolute -top-1 -right-1 bg-[#b91c1c] text-white text-[7px] w-3 h-3 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span></button>
-            <button onclick="toggleCartModal()" class="relative group p-1"><i class="fa-solid fa-shopping-bag text-xl hover:text-[#b91c1c] transition-colors"></i><span id="cart-count" class="absolute -top-1 -right-1 bg-[#b91c1c] text-white text-[7px] w-3 h-3 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span></button>
+        <div class="flex items-center gap-5">
+            <button onclick="toggleFavModal()" class="relative group p-2"><i class="fa-regular fa-heart text-xl text-stone-800"></i><span id="fav-count-badge" class="absolute top-0 right-0 bg-[#b91c1c] text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span></button>
+            <button onclick="toggleCartModal()" class="relative group p-2"><i class="fa-solid fa-shopping-bag text-xl text-stone-800"></i><span id="cart-count" class="absolute top-0 right-0 bg-[#b91c1c] text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span></button>
         </div>
     </nav>
 
-    <section class="h-[35vh] min-h-[300px] flex items-center justify-center bg-stone-50 overflow-hidden relative mt-12">
-        <div class="z-10 text-center reveal active">
-            <h1 class="text-4xl md:text-6xl font-serif italic mb-3 leading-tight">Boldly <span class="text-[#b91c1c]">Redder.</span></h1>
-            <p class="text-stone-400 text-[9px] uppercase tracking-[0.4em] mb-6">Gurgaon's Premiere Designer House</p>
-            <button onclick="document.getElementById('collections').scrollIntoView()" class="btn-primary px-8 py-3 text-[9px] font-bold uppercase tracking-[0.2em]">View Selection</button>
+    <section class="h-[40vh] min-h-[350px] flex items-center justify-center bg-stone-50 overflow-hidden relative mt-16">
+        <div class="z-10 text-center reveal active px-4">
+            <h1 class="text-4xl md:text-6xl font-serif italic mb-4 leading-tight">Boldly <span class="text-[#b91c1c]">Redder.</span></h1>
+            <p class="text-stone-400 text-[10px] md:text-xs uppercase tracking-[0.4em] mb-8">Gurgaon's Premiere Designer House</p>
+            <button onclick="document.getElementById('collections').scrollIntoView()" class="btn-primary px-8 py-3.5 text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg">View Selection</button>
         </div>
     </section>
 
-    <section id="collections" class="px-6 md:px-12 py-6 flex flex-col lg:flex-row justify-between items-center gap-6 border-b sticky top-[60px] bg-white/95 backdrop-blur-md z-40 transition-all">
-        <div class="flex gap-8 text-[9px] font-bold uppercase tracking-widest w-full lg:w-auto justify-center lg:justify-start">
-            <button onclick="filterProducts('All')" class="filter-btn text-[#b91c1c] border-b-2 border-[#b91c1c] pb-1">All</button>
-            <button onclick="filterProducts('Suits')" class="filter-btn text-stone-300 hover:text-black">Suits</button>
-            <button onclick="filterProducts('Co-ords')" class="filter-btn text-stone-400 hover:text-black">Co-ords</button>
+    <section id="collections" class="px-5 md:px-12 py-4 flex flex-col md:flex-row justify-between items-center gap-4 border-b sticky top-[60px] bg-white/95 backdrop-blur-md z-40 shadow-sm">
+        <div class="flex gap-6 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">
+            <button onclick="filterProducts('All')" class="filter-btn text-[#b91c1c] border-b-2 border-[#b91c1c] pb-1 px-1">All</button>
+            <button onclick="filterProducts('Suits')" class="filter-btn text-stone-400 hover:text-black px-1">Suits</button>
+            <button onclick="filterProducts('Co-ords')" class="filter-btn text-stone-400 hover:text-black px-1">Co-ords</button>
         </div>
-        <div class="flex items-center gap-6 w-full lg:w-auto justify-between lg:justify-end">
-            <div class="relative group w-full lg:w-auto"><i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs z-10"></i><input type="text" oninput="handleSearch(this.value)" placeholder="SEARCH NARRATIVE..." class="w-full lg:w-64 pl-9 pr-4 py-2 bg-stone-50 text-[9px] font-bold uppercase tracking-widest border border-transparent focus:border-[#b91c1c] outline-none rounded-sm transition-all"></div>
-            <select onchange="handleSort(this.value)" class="bg-transparent text-[9px] font-bold uppercase outline-none cursor-pointer flex-shrink-0"><option value="featured">Featured</option><option value="bestselling">Popular</option><option value="lowhigh">Price: Low - High</option><option value="highlow">Price: High - Low</option></select>
+        
+        <div class="flex items-center gap-4 w-full md:w-auto">
+            <div class="relative flex-1 md:flex-none">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs"></i>
+                <input type="text" oninput="handleSearch(this.value)" placeholder="SEARCH..." class="w-full md:w-64 pl-9 pr-4 py-2.5 bg-stone-50 text-[10px] font-bold uppercase tracking-widest border border-transparent focus:border-[#b91c1c] outline-none rounded-sm transition-all">
+            </div>
+            <select onchange="handleSort(this.value)" class="bg-transparent text-[10px] font-bold uppercase outline-none cursor-pointer p-2"><option value="featured">Featured</option><option value="lowhigh">Price: Low - High</option><option value="highlow">Price: High - Low</option></select>
         </div>
     </section>
 
-    <main class="px-6 md:px-12 py-8"><div id="product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10"></div></main>
+    <main class="px-4 md:px-12 py-6">
+        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-8 md:gap-x-8 md:gap-y-12"></div>
+    </main>
 
-    <footer class="bg-[#111] text-white py-12 px-12 text-center border-t border-stone-800">
-        <div class="text-2xl font-serif font-bold text-[#b91c1c] mb-4 uppercase">REDDER.</div>
-        <div class="flex justify-center gap-8 mb-8 text-[9px] font-bold uppercase tracking-widest text-stone-400">
+    <footer class="bg-[#111] text-white py-12 px-6 text-center border-t border-stone-800">
+        <div class="text-2xl font-serif font-bold text-[#b91c1c] mb-6 uppercase">REDDER.</div>
+        <div class="flex justify-center gap-6 mb-8 text-[10px] font-bold uppercase tracking-widest text-stone-400 flex-wrap">
             <button onclick="toggleReturnModal()" class="hover:text-white border-b border-transparent hover:border-white pb-1">Return / Exchange</button>
             <button onclick="openPolicy('privacy')" class="hover:text-white border-b border-transparent hover:border-white pb-1">Privacy Policy</button>
         </div>
-        <p class="text-[8px] uppercase tracking-[0.3em] opacity-30 mb-8">© 2025 Gurgaon House. Secure Concierge Protocol.</p>
-        <div class="flex justify-center gap-8 text-xl opacity-60"><i class="fa-brands fa-whatsapp hover:text-[#b91c1c] cursor-pointer" onclick="openGeneralChat()"></i><i class="fa-brands fa-instagram hover:text-[#b91c1c]"></i></div>
+        <p class="text-[9px] uppercase tracking-[0.2em] opacity-30 mb-8">© 2025 Gurgaon House. Secure Concierge Protocol.</p>
+        <div class="flex justify-center gap-8 text-xl opacity-60">
+            <i class="fa-brands fa-whatsapp hover:text-[#b91c1c] cursor-pointer" onclick="openGeneralChat()"></i>
+            <i class="fa-brands fa-instagram hover:text-[#b91c1c]"></i>
+        </div>
     </footer>
 
-    <div id="product-modal" class="modal fixed inset-0 z-[100] flex items-center justify-center bg-white/95 backdrop-blur-2xl p-4">
-        <div class="max-w-4xl w-full flex flex-col md:flex-row items-center gap-10 p-6 relative bg-white rounded-xl shadow-2xl">
-            <button onclick="closeProductModal()" class="absolute top-4 right-4 text-3xl font-light hover:text-[#b91c1c]">&times;</button>
-            <div class="md:w-1/2 aspect-[3/4] overflow-hidden bg-stone-50 rounded-lg relative"><img id="modal-img" src="" class="w-full h-full object-cover" onerror="imageError(this)"><div id="modal-soldout-badge" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white text-xs font-bold px-4 py-2 uppercase tracking-[0.2em] border border-white">Sold Out</div></div>
-            <div class="md:w-1/2 w-full"><span id="modal-tag" class="text-[9px] font-bold text-[#b91c1c] uppercase tracking-[0.3em] mb-2 block"></span><h3 id="modal-title" class="text-3xl md:text-4xl font-serif font-bold mb-4 italic text-slate-900"></h3><div id="modal-price-container" class="mb-6"><p id="modal-price" class="flex items-baseline"></p></div><div class="mb-8 border-l-2 border-stone-100 pl-4"><p id="modal-desc" class="text-stone-500 text-xs leading-relaxed max-h-[150px] overflow-y-auto pr-2 scrollbar-thin whitespace-pre-wrap"></p></div><div class="mb-8"><label class="text-[9px] font-bold uppercase tracking-widest mb-4 block text-stone-400">Select Narrative Size</label><div id="modal-sizes" class="flex flex-wrap gap-3"></div></div><button id="modal-add-btn" disabled class="btn-primary w-full py-4 text-[9px] font-bold uppercase tracking-[0.3em] disabled:bg-stone-100 disabled:text-stone-300 rounded-sm">Bag Selection</button></div>
+    <div id="product-modal" class="modal fixed inset-0 z-[100] flex items-center justify-center bg-white/95 backdrop-blur-2xl p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-4xl rounded-lg shadow-2xl relative flex flex-col md:flex-row overflow-hidden my-auto">
+            <button onclick="closeProductModal()" class="absolute top-3 right-3 z-10 text-2xl w-8 h-8 flex items-center justify-center rounded-full bg-white/80 shadow-sm text-stone-800">&times;</button>
+            
+            <div class="md:w-1/2 aspect-[3/4] md:aspect-auto bg-stone-50 relative">
+                <img id="modal-img" src="" class="w-full h-full object-cover" onerror="imageError(this)">
+                <div id="modal-soldout-badge" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white text-xs font-bold px-4 py-2 uppercase tracking-[0.2em] border border-white">Sold Out</div>
+            </div>
+            
+            <div class="md:w-1/2 p-6 md:p-10 flex flex-col">
+                <span id="modal-tag" class="text-[9px] font-bold text-[#b91c1c] uppercase tracking-[0.3em] mb-2 block"></span>
+                <h3 id="modal-title" class="text-2xl md:text-4xl font-serif font-bold mb-3 italic text-slate-900 leading-tight"></h3>
+                <div id="modal-price-container" class="mb-5 border-b pb-4">
+                    <p id="modal-price" class="flex items-baseline"></p>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto max-h-[150px] mb-6 pr-2 scrollbar-thin">
+                    <p id="modal-desc" class="text-stone-500 text-xs leading-relaxed whitespace-pre-wrap font-medium"></p>
+                </div>
+
+                <div class="mb-8 mt-auto">
+                    <label class="text-[9px] font-bold uppercase tracking-widest mb-3 block text-stone-400">Select Size</label>
+                    <div id="modal-sizes" class="flex flex-wrap gap-3"></div>
+                </div>
+                
+                <button id="modal-add-btn" disabled class="btn-primary w-full py-4 text-[11px] font-bold uppercase tracking-[0.3em] disabled:bg-stone-100 disabled:text-stone-300 rounded-sm">Bag Selection</button>
+            </div>
         </div>
     </div>
 
-    <div id="cart-modal" class="modal fixed inset-0 z-[100] flex justify-end bg-black/30 backdrop-blur-sm">
-        <div class="slide-panel bg-white w-full max-w-md h-full p-8 flex flex-col shadow-2xl relative">
-            <div class="flex justify-between items-end mb-4 border-b pb-4 text-[#b91c1c]">
-                <h3 class="text-2xl font-serif italic">Your Bag</h3>
-                <button onclick="toggleCartModal()" class="text-2xl font-light">&times;</button>
+    <div id="cart-modal" class="modal fixed inset-0 z-[100] flex justify-end bg-black/50 backdrop-blur-sm">
+        <div class="slide-panel bg-white w-full max-w-md h-full flex flex-col shadow-2xl relative">
+            <div class="flex justify-between items-center p-6 border-b bg-white z-10">
+                <h3 class="text-xl font-serif italic text-[#b91c1c]">Your Bag</h3>
+                <button onclick="toggleCartModal()" class="text-2xl font-light w-8 h-8 flex items-center justify-center">&times;</button>
             </div>
-            <div class="flex-1 overflow-y-auto pr-2 scrollbar-thin">
+            
+            <div class="flex-1 overflow-y-auto p-6 scrollbar-thin">
                 <div id="cart-items" class="space-y-6 mb-8"></div>
-                <div id="checkout-section" class="border-t pt-6">
-                    <h4 class="font-serif italic text-lg mb-4">Shipping Details</h4>
+                
+                <div id="checkout-section" class="border-t pt-6 hidden">
+                    <h4 class="font-serif italic text-lg mb-4 text-stone-800">Secure Checkout</h4>
                     <input type="text" id="checkout-name" placeholder="Full Name" class="input-field">
                     <input type="tel" id="checkout-phone" placeholder="Phone Number" class="input-field">
-                    <textarea id="checkout-address" placeholder="Complete Address (House No, Street, City, Pin)" class="input-field h-20"></textarea>
+                    <textarea id="checkout-address" placeholder="Complete Address (House No, Street, City, Pin)" class="input-field h-24"></textarea>
                     
-                    <h4 class="font-serif italic text-lg mb-4 mt-6">Payment Method</h4>
+                    <h4 class="font-serif italic text-lg mb-4 mt-8 text-stone-800">Payment Method</h4>
                     <div class="payment-option selected" onclick="selectPayment('COD')">
                         <div class="payment-circle"></div>
-                        <div class="text-xs font-bold uppercase tracking-widest">Cash on Delivery (COD)</div>
+                        <div>
+                            <div class="text-[11px] font-bold uppercase tracking-widest">Cash on Delivery</div>
+                            <div class="text-[9px] text-stone-400">Pay cash upon arrival</div>
+                        </div>
                     </div>
                     <div class="payment-option" onclick="selectPayment('UPI')">
                         <div class="payment-circle"></div>
-                        <div class="text-xs font-bold uppercase tracking-widest">UPI / GPay / Paytm</div>
+                        <div>
+                            <div class="text-[11px] font-bold uppercase tracking-widest">UPI / GPay / Paytm</div>
+                            <div class="text-[9px] text-stone-400">Fast & Secure Online Pay</div>
+                        </div>
                     </div>
                     <input type="hidden" id="selected-payment" value="COD">
+
+                    <div class="mt-8 pt-6 border-t border-dashed border-stone-300">
+                        <p class="text-[9px] font-bold uppercase text-stone-400 mb-2">Have a code?</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="coupon-input" placeholder="ENTER CODE" class="input-field mb-0 py-2">
+                            <button onclick="applyCoupon()" class="bg-black text-white px-4 text-[9px] font-bold uppercase rounded-sm h-[46px]">Apply</button>
+                        </div>
+                        <p id="coupon-msg" class="text-[9px] mt-1 font-bold"></p>
+                    </div>
                 </div>
             </div>
-            <div class="pt-4 border-t space-y-4 bg-white z-10">
-                <div class="flex justify-between text-xl font-serif italic pt-2"><span>Total</span><span id="cart-total">₹0</span></div>
-                <button onclick="placeOrder()" class="w-full py-4 bg-[#b91c1c] text-white text-[9px] font-bold uppercase tracking-[0.4em] shadow-xl rounded-sm hover:bg-red-800 transition-colors">Confirm Order</button>
+
+            <div class="p-6 border-t bg-white z-10 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+                <div class="flex justify-between text-lg font-serif italic mb-4"><span>Total</span><span id="cart-total" class="text-[#b91c1c] font-bold">₹0</span></div>
+                <button onclick="placeOrder()" class="w-full py-4 bg-[#b91c1c] text-white text-[10px] font-bold uppercase tracking-[0.3em] shadow-lg rounded-sm hover:bg-red-800 transition-colors">Confirm Order</button>
             </div>
         </div>
     </div>
 
     <div id="success-modal" class="modal fixed inset-0 z-[120] flex items-center justify-center bg-white/95 backdrop-blur-xl p-4">
-        <div class="max-w-sm w-full text-center">
-            <div class="text-6xl mb-6 text-green-600">✓</div>
-            <h3 class="text-3xl font-serif italic mb-2 text-[#b91c1c]">Order Confirmed</h3>
+        <div class="max-w-sm w-full text-center p-4">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-check text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-2xl font-serif italic mb-2 text-[#b91c1c]">Order Confirmed</h3>
             <p id="payment-status-msg" class="text-xs text-stone-500 mb-8 uppercase tracking-widest">Thank you for choosing Redder.</p>
             
             <div id="upi-pay-section" class="hidden mb-8">
-                <p class="text-xs font-bold text-[#b91c1c] mb-2">COMPLETE PAYMENT</p>
-                <a id="upi-link-btn" href="#" class="bg-black text-white px-6 py-3 rounded-md text-xs font-bold uppercase tracking-widest block w-full">Open GPay / PhonePe</a>
-                <p class="text-[9px] text-stone-400 mt-2">Tap above to pay securely via UPI app</p>
+                <a id="upi-link-btn" href="#" class="bg-black text-white px-6 py-4 rounded-md text-xs font-bold uppercase tracking-widest block w-full shadow-lg">Pay Now via UPI</a>
+                <p class="text-[9px] text-stone-400 mt-3">Tap to open GPay / PhonePe / Paytm</p>
             </div>
 
-            <div class="bg-stone-50 p-6 rounded-sm mb-8 text-left">
+            <div class="bg-stone-50 p-6 rounded-sm mb-6 text-left border border-stone-100">
                 <p class="text-[9px] font-bold uppercase text-stone-400 mb-1">Order ID</p>
-                <p id="success-order-id" class="font-mono text-sm mb-4">#------</p>
+                <p id="success-order-id" class="font-mono text-lg font-bold mb-4 text-stone-800">#------</p>
                 <p class="text-[9px] font-bold uppercase text-stone-400 mb-1">Estimated Delivery</p>
-                <p class="font-mono text-sm">3-5 Business Days</p>
+                <p class="font-mono text-sm text-stone-800">3-5 Business Days</p>
             </div>
-            <button onclick="location.reload()" class="btn-primary w-full py-4 text-[9px] font-bold uppercase tracking-[0.3em] rounded-sm">Continue Shopping</button>
+            <button onclick="location.reload()" class="btn-primary w-full py-4 text-[10px] font-bold uppercase tracking-[0.3em] rounded-sm">Continue Shopping</button>
         </div>
     </div>
 
     <div id="return-modal" class="modal fixed inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="bg-white max-w-sm w-full p-8 rounded-lg relative text-center">
-            <button onclick="toggleReturnModal()" class="absolute top-4 right-4 text-2xl">&times;</button>
-            <h3 class="text-2xl font-serif italic mb-2 text-[#b91c1c]">Return Concierge</h3>
-            <p class="text-xs text-stone-500 mb-6">Enter your Order ID to initiate a return request.</p>
-            <input type="text" id="return-order-id" placeholder="ORDER ID (e.g. #ABC123)" class="input-field text-center uppercase">
-            <button onclick="initiateReturn()" class="btn-primary w-full py-3 text-[9px] font-bold uppercase tracking-[0.2em] rounded-sm">Connect to Stylist</button>
+            <button onclick="toggleReturnModal()" class="absolute top-3 right-3 text-2xl w-8 h-8 text-stone-500">&times;</button>
+            <h3 class="text-2xl font-serif italic mb-3 text-[#b91c1c]">Return Concierge</h3>
+            <p class="text-xs text-stone-500 mb-6 leading-relaxed">Enter your Order ID to initiate a seamless return or exchange request.</p>
+            <input type="text" id="return-order-id" placeholder="ORDER ID (e.g. #ABC123)" class="input-field text-center uppercase text-lg tracking-widest">
+            <button onclick="initiateReturn()" class="btn-primary w-full py-3.5 text-[10px] font-bold uppercase tracking-[0.2em] rounded-sm">Connect to Stylist</button>
         </div>
     </div>
 
-    <div id="fav-modal" class="modal fixed inset-0 z-[100] flex justify-end bg-black/30 backdrop-blur-sm"><div class="slide-panel bg-white w-full max-w-md h-full p-8 flex flex-col shadow-2xl"><div class="flex justify-between items-end mb-8 border-b pb-4 text-[#b91c1c]"><h3 class="text-2xl font-serif italic">Favorites</h3><button onclick="toggleFavModal()" class="text-2xl font-light">&times;</button></div><div id="fav-items" class="flex-1 overflow-y-auto space-y-6"></div></div></div>
+    <div id="fav-modal" class="modal fixed inset-0 z-[100] flex justify-end bg-black/50 backdrop-blur-sm"><div class="slide-panel bg-white w-full max-w-md h-full p-6 flex flex-col shadow-2xl"><div class="flex justify-between items-center mb-6 border-b pb-4 text-[#b91c1c]"><h3 class="text-xl font-serif italic">Favorites</h3><button onclick="toggleFavModal()" class="text-2xl w-8 h-8">&times;</button></div><div id="fav-items" class="flex-1 overflow-y-auto space-y-4 scrollbar-thin"></div></div></div>
     <div id="policy-modal" class="modal fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"><div class="bg-white max-w-lg w-full p-8 rounded-lg relative"><button onclick="closePolicy()" class="absolute top-4 right-4 text-2xl">&times;</button><h3 class="text-2xl font-serif italic mb-6 text-[#b91c1c]">Policy Detail</h3><pre id="policy-text" class="whitespace-pre-wrap font-sans text-xs leading-relaxed text-stone-600"></pre></div></div>
 
     <script>
+        // ⚠️ EDIT THIS TO YOUR REAL UPI ID (e.g., 9873445567@okicici)
         const MY_UPI_ID = "upi31908@pingpay"; 
         
-        // --- MASTER COLLECTION ---
+        // COUPON CONFIG & SECURITY
+        const COUPONS = { "WELCOME10": 0.10, "REDDER500": 500 };
+        const COUPON_STORAGE_KEY = 'redder_coupons_redeemed';
+
+        // --- MASTER COLLECTION (FULL DESCRIPTIONS RESTORED) ---
         const MY_COLLECTION = [
             { id: 1, name: "Peplum Top with Palazzo set", price: "₹900", mrp: "₹1,499", rawPrice: 900, category: "Co-ords", imageBase: "sub/1", tag: "Bestseller", description: `This is our signature bestseller, crafted for the modern woman who values both tradition and comfort.\n\nThe Narrative:\nMade with high-quality Dobby Chiffon fabric, this set offers breathable comfort ideal for long festive evenings. The peplum silhouette provides a flattering fit for all body types, while the palazzo adds a touch of contemporary flair.\n\nProduct Details\nMaterial: Dobby Chiffon\nFit: Regular\nStyle: Peplum Co-ord Set\nClosure: Pull On\nCare Instructions: Hand Wash Only.`, sizeStock: { "S": 0, "M": 0, "L": 0, "XL": 0 } },
             { id: 2, name: "Thread work chanderi silk kurta set.", price: "₹1,700", mrp: "₹2,899", rawPrice: 1700, category: "Suits", imageBase: "sub/2", tag: "New", description: `Thread work chanderi silk kurta set\nProduct Details\nOff white, red and gold-toned printed kurta with trousers with dupatta\n\nKurta design:\n◦ Geometric printed\n◦ A-line shape\n◦ Panelled style\n◦ Notch neck, three-quarter regular sleeves\n◦ Thread work detail\n◦ Calf length with flared hem\n○ Chanderi silk machine weave fabric\nTrousers design:\n◦Solid trousers\n◦ Partially elasticated waistband\nSlip-on closure\nDupatta design:\n◦ Solid dupatta\n◦ Taping borders\n\nMaterial\nTop fabric: Chanderi Silk\nBottom fabric: chanderi silk.`, sizeStock: { "S": 2, "M": 5, "L": 5, "XL": 2 } },
@@ -191,18 +260,39 @@
 
         let cart = [], favs = [], currentUser = null;
         let currentFilter = 'All', currentSort = 'featured', activeIdx = null, selectedSize = null, appliedDiscount = 0, searchTerm = '';
+        let redeemedCoupons = [];
 
         window.addEventListener('scroll', () => { const nav = document.getElementById('navbar'); if(window.scrollY > 20) nav.classList.add('nav-scrolled'); else nav.classList.remove('nav-scrolled'); document.querySelectorAll('.reveal').forEach(el => { if(el.getBoundingClientRect().top < window.innerHeight - 100) el.classList.add('active'); }); });
         function startCountdown() { let h=4, m=0, s=0; const el = document.getElementById('countdown'); setInterval(() => { if(s>0) s--; else { if(m>0) {m--;s=59;} else {if(h>0) {h--;m=59;s=59;} else {h=4;m=0;s=0;}}} el.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }, 1000); }
         function imageError(img) { const currentSrc = img.src; if (currentSrc.endsWith('.jpg')) img.src = currentSrc.replace('.jpg', '.png'); else if (currentSrc.endsWith('.png')) img.src = currentSrc.replace('.png', '.jpeg'); else if (currentSrc.endsWith('.jpeg')) img.src = currentSrc.replace('.jpeg', '.JPG'); else if (currentSrc.endsWith('.JPG')) img.src = currentSrc.replace('.JPG', '.jpg.jpg'); else { img.src = 'https://via.placeholder.com/800x1100?text=Check+File+Name'; } }
-        function init() { startCountdown(); const saved = localStorage.getItem('redderUser'); if(saved) { currentUser = JSON.parse(saved); document.getElementById('checkout-name').value = currentUser.name; document.getElementById('checkout-phone').value = currentUser.phone; document.getElementById('checkout-address').value = currentUser.address; } const savedFavs = localStorage.getItem('redderFavs'); if(savedFavs) { favs = JSON.parse(savedFavs); updateFavUI(); } renderProducts(); }
+        function init() { 
+            startCountdown(); 
+            const saved = localStorage.getItem('redderUser'); if(saved) { currentUser = JSON.parse(saved); document.getElementById('checkout-name').value = currentUser.name; document.getElementById('checkout-phone').value = currentUser.phone; document.getElementById('checkout-address').value = currentUser.address; } 
+            const savedFavs = localStorage.getItem('redderFavs'); if(savedFavs) { favs = JSON.parse(savedFavs); updateFavUI(); } 
+            const savedCoupons = localStorage.getItem(COUPON_STORAGE_KEY); if(savedCoupons) { redeemedCoupons = JSON.parse(savedCoupons); }
+            renderProducts(); 
+        }
+        
         function handleSort(val) { currentSort = val; renderProducts(); }
         function handleSearch(val) { searchTerm = val.toLowerCase(); renderProducts(); }
         function filterProducts(c) { currentFilter = c; document.querySelectorAll('.filter-btn').forEach(b => { if(b.innerText === c) b.classList.add('text-[#b91c1c]', 'border-b-2', 'border-[#b91c1c]'); else b.classList.remove('text-[#b91c1c]', 'border-b-2', 'border-[#b91c1c]'); }); renderProducts(); }
-        function renderProducts() { const grid = document.getElementById('product-grid'); grid.innerHTML = ''; let items = [...MY_COLLECTION]; if(currentFilter !== 'All') items = items.filter(i => i.category === currentFilter); if(searchTerm) { items = items.filter(i => i.name.toLowerCase().includes(searchTerm) || i.category.toLowerCase().includes(searchTerm)); } if(currentSort === 'lowhigh') items.sort((a,b) => a.rawPrice - b.rawPrice); else if(currentSort === 'highlow') items.sort((a,b) => b.rawPrice - a.rawPrice); items.forEach((p, idx) => { const imgSrc = p.imageBase + ".jpg"; const isFav = favs.includes(p.id); const totalStock = Object.values(p.sizeStock).reduce((a,b) => a+b, 0); const isSoldOut = totalStock === 0; const priceDisplay = p.mrp ? `<span class="text-[10px] text-stone-400 line-through mr-2">${p.mrp}</span><span class="text-xs font-bold tracking-[0.1em] text-[#b91c1c]">${p.price}</span>` : `<span class="text-xs font-bold tracking-[0.1em] text-[#b91c1c]">${p.price}</span>`; const imgClass = isSoldOut ? 'sold-out-overlay' : 'group-hover:scale-105'; const badge = isSoldOut ? `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white text-[9px] font-bold px-3 py-2 uppercase tracking-widest border border-white z-20">Sold Out</div>` : ''; grid.innerHTML += `<div class="reveal active group cursor-pointer" style="transition-delay: ${idx * 0.05}s"><div class="relative aspect-[3/4] overflow-hidden bg-stone-50 mb-4 rounded-sm" onclick="openProductModal(${MY_COLLECTION.indexOf(p)})"><img src="${imgSrc}" class="w-full h-full object-cover transition-transform duration-[1s] ${imgClass}" onerror="imageError(this)">${badge}<div class="absolute top-3 left-3 bg-[#b91c1c] text-white text-[7px] font-bold px-2 py-1 uppercase tracking-widest ${isSoldOut ? 'hidden' : ''}">${p.tag}</div><button onclick="event.stopPropagation(); toggleFav(${p.id})" class="absolute top-3 right-3 text-lg like-btn ${isFav ? 'liked' : 'text-stone-400'}"><i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i></button></div><h3 class="font-serif italic text-lg text-stone-900 group-hover:text-[#b91c1c] transition-colors mb-1 truncate">${p.name}</h3><p class="text-[8px] tracking-widest text-stone-300 font-bold uppercase mb-1">${p.category}</p><div class="flex items-center">${priceDisplay}</div></div>`; }); if(items.length === 0) { grid.innerHTML = `<div class="col-span-4 text-center py-20 text-stone-300 font-serif italic text-2xl">Narrative not found.</div>`; } }
+        function renderProducts() { const grid = document.getElementById('product-grid'); grid.innerHTML = ''; let items = [...MY_COLLECTION]; if(currentFilter !== 'All') items = items.filter(i => i.category === currentFilter); if(searchTerm) { items = items.filter(i => i.name.toLowerCase().includes(searchTerm) || i.category.toLowerCase().includes(searchTerm)); } if(currentSort === 'lowhigh') items.sort((a,b) => a.rawPrice - b.rawPrice); else if(currentSort === 'highlow') items.sort((a,b) => b.rawPrice - a.rawPrice); items.forEach((p, idx) => { const imgSrc = p.imageBase + ".jpg"; const isFav = favs.includes(p.id); const totalStock = Object.values(p.sizeStock).reduce((a,b) => a+b, 0); const isSoldOut = totalStock === 0; const priceDisplay = p.mrp ? `<span class="text-[10px] text-stone-400 line-through mr-2">${p.mrp}</span><span class="text-xs font-bold tracking-[0.1em] text-[#b91c1c]">${p.price}</span>` : `<span class="text-xs font-bold tracking-[0.1em] text-[#b91c1c]">${p.price}</span>`; const imgClass = isSoldOut ? 'sold-out-overlay' : 'group-hover:scale-105'; const badge = isSoldOut ? `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white text-[9px] font-bold px-3 py-2 uppercase tracking-widest border border-white z-20">Sold Out</div>` : ''; grid.innerHTML += `<div class="reveal active group cursor-pointer" style="transition-delay: ${idx * 0.05}s"><div class="relative aspect-[3/4] overflow-hidden bg-stone-50 mb-3 rounded-sm" onclick="openProductModal(${MY_COLLECTION.indexOf(p)})"><img src="${imgSrc}" class="w-full h-full object-cover transition-transform duration-[1s] ${imgClass}" onerror="imageError(this)">${badge}<div class="absolute top-2 left-2 bg-[#b91c1c] text-white text-[7px] font-bold px-2 py-1 uppercase tracking-widest ${isSoldOut ? 'hidden' : ''}">${p.tag}</div><button onclick="event.stopPropagation(); toggleFav(${p.id})" class="absolute top-2 right-2 text-lg like-btn ${isFav ? 'liked' : 'text-stone-400'}"><i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i></button></div><h3 class="font-serif italic text-sm md:text-lg text-stone-900 group-hover:text-[#b91c1c] transition-colors mb-1 truncate">${p.name}</h3><p class="text-[8px] tracking-widest text-stone-300 font-bold uppercase mb-1">${p.category}</p><div class="flex items-center">${priceDisplay}</div></div>`; }); if(items.length === 0) { grid.innerHTML = `<div class="col-span-4 text-center py-20 text-stone-300 font-serif italic text-2xl">Narrative not found.</div>`; } }
         function toggleFav(id) { if(favs.includes(id)) favs = favs.filter(i => i !== id); else favs.push(id); localStorage.setItem('redderFavs', JSON.stringify(favs)); updateFavUI(); renderProducts(); }
         function updateFavUI() { const count = favs.length; const badge = document.getElementById('fav-count-badge'); badge.innerText = count; badge.style.opacity = count > 0 ? '1' : '0'; const list = document.getElementById('fav-items'); list.innerHTML = count === 0 ? '<p class="text-center text-xs text-stone-400">No favorites yet.</p>' : ''; favs.forEach(fid => { const item = MY_COLLECTION.find(p => p.id === fid); if(item) { list.innerHTML += `<div class="flex gap-4 items-center"><img src="${item.imageBase}.jpg" class="w-12 h-16 object-cover rounded-sm" onerror="imageError(this)"><div class="flex-1"><h4 class="font-serif italic text-sm">${item.name}</h4><p class="text-[9px] font-bold text-[#b91c1c]">${item.price}</p></div><button onclick="toggleFav(${item.id})" class="text-stone-400 hover:text-red-600"><i class="fa-solid fa-xmark"></i></button></div>`; } }); }
-        function openProductModal(idx) { const p = MY_COLLECTION[idx]; activeIdx = idx; selectedSize = null; const totalStock = Object.values(p.sizeStock).reduce((a,b) => a+b, 0); const isSoldOut = totalStock === 0; const imgEl = document.getElementById('modal-img'); imgEl.src = p.imageBase + ".jpg"; if(isSoldOut) { imgEl.classList.add('sold-out-overlay'); document.getElementById('modal-soldout-badge').classList.remove('hidden'); } else { imgEl.classList.remove('sold-out-overlay'); document.getElementById('modal-soldout-badge').classList.add('hidden'); } document.getElementById('modal-title').innerText = p.name; const priceEl = document.getElementById('modal-price'); if (p.mrp) { priceEl.innerHTML = `<span class="text-stone-400 line-through text-lg mr-3 font-light">${p.mrp}</span> <span class="text-2xl font-bold text-[#b91c1c]">${p.price}</span>`; } else { priceEl.innerHTML = `<span class="text-2xl font-bold text-[#b91c1c]">${p.price}</span>`; } document.getElementById('modal-desc').innerText = p.description; document.getElementById('modal-tag').innerText = p.tag; const sc = document.getElementById('modal-sizes'); sc.innerHTML = ''; Object.keys(p.sizeStock).forEach(size => { const stock = p.sizeStock[size]; const isOut = stock <= 0; sc.innerHTML += `<button onclick="selectSize(this, '${size}')" class="size-btn w-12 h-12 text-[9px] font-bold relative rounded-sm ${isOut ? 'disabled' : ''}" ${isOut ? 'disabled' : ''}>${size}</button>`; }); const btn = document.getElementById('modal-add-btn'); if(isSoldOut) { btn.innerText = "SOLD OUT"; btn.disabled = true; btn.style.opacity = "0.5"; } else { btn.innerText = "BAG SELECTION"; btn.disabled = true; btn.style.opacity = "1"; } document.getElementById('product-modal').classList.add('active'); }
+        
+        function openProductModal(idx) { 
+            const p = MY_COLLECTION[idx]; activeIdx = idx; selectedSize = null; 
+            const totalStock = Object.values(p.sizeStock).reduce((a,b) => a+b, 0); const isSoldOut = totalStock === 0; 
+            const imgEl = document.getElementById('modal-img'); imgEl.src = p.imageBase + ".jpg"; 
+            if(isSoldOut) { imgEl.classList.add('sold-out-overlay'); document.getElementById('modal-soldout-badge').classList.remove('hidden'); } else { imgEl.classList.remove('sold-out-overlay'); document.getElementById('modal-soldout-badge').classList.add('hidden'); } 
+            document.getElementById('modal-title').innerText = p.name; 
+            const priceEl = document.getElementById('modal-price'); if (p.mrp) { priceEl.innerHTML = `<span class="text-stone-400 line-through text-lg mr-3 font-light">${p.mrp}</span> <span class="text-2xl font-bold text-[#b91c1c]">${p.price}</span>`; } else { priceEl.innerHTML = `<span class="text-2xl font-bold text-[#b91c1c]">${p.price}</span>`; } 
+            document.getElementById('modal-desc').innerText = p.description; document.getElementById('modal-tag').innerText = p.tag; 
+            const sc = document.getElementById('modal-sizes'); sc.innerHTML = ''; 
+            Object.keys(p.sizeStock).forEach(size => { const stock = p.sizeStock[size]; const isOut = stock <= 0; sc.innerHTML += `<button onclick="selectSize(this, '${size}')" class="size-btn w-10 h-10 md:w-12 md:h-12 text-[9px] font-bold relative rounded-sm ${isOut ? 'disabled' : ''}" ${isOut ? 'disabled' : ''}>${size}</button>`; }); 
+            const btn = document.getElementById('modal-add-btn'); if(isSoldOut) { btn.innerText = "SOLD OUT"; btn.disabled = true; btn.style.opacity = "0.5"; } else { btn.innerText = "BAG SELECTION"; btn.disabled = true; btn.style.opacity = "1"; } 
+            document.getElementById('product-modal').classList.add('active'); 
+        }
         function selectSize(btn, s) { if(btn.disabled) return; selectedSize = s; document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); document.getElementById('modal-add-btn').disabled = false; }
         
         function updateCartUI() { 
@@ -210,7 +300,7 @@
             const list = document.getElementById('cart-items'); list.innerHTML = ''; let sub = 0; 
             cart.forEach((item, i) => { 
                 sub += item.rawPrice; 
-                list.innerHTML += `<div class="flex gap-6"><img src="${item.imageBase + '.jpg'}" class="w-16 aspect-[3/4] object-cover bg-stone-50 rounded-sm" onerror="imageError(this)"><div class="flex-1 text-xs"><h4 class="font-serif italic text-lg">${item.name}</h4><p class="text-[9px] uppercase tracking-widest font-bold text-stone-400 mt-1">Size: ${item.selectedSize}</p><div class="mt-2 text-[#b91c1c] font-bold">${item.price}</div><button onclick="removeFromCart(${i})" class="text-[8px] uppercase font-bold mt-4 text-stone-400 hover:text-[#b91c1c] transition-colors block">Remove</button></div></div>`; 
+                list.innerHTML += `<div class="flex gap-4 items-start"><img src="${item.imageBase + '.jpg'}" class="w-16 aspect-[3/4] object-cover bg-stone-50 rounded-sm" onerror="imageError(this)"><div class="flex-1 text-xs"><h4 class="font-serif italic text-base leading-tight mb-1">${item.name}</h4><p class="text-[9px] uppercase tracking-widest font-bold text-stone-400 mb-1">Size: ${item.selectedSize}</p><div class="text-[#b91c1c] font-bold">${item.price}</div><button onclick="removeFromCart(${i})" class="text-[9px] uppercase font-bold mt-2 text-stone-400 hover:text-[#b91c1c] underline">Remove</button></div></div>`; 
             }); 
             document.getElementById('cart-total').innerText = "₹" + (sub - appliedDiscount); 
             document.getElementById('checkout-section').style.display = count > 0 ? 'block' : 'none';
@@ -220,6 +310,38 @@
             document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
             event.currentTarget.classList.add('selected');
             document.getElementById('selected-payment').value = method;
+        }
+
+        // COUPON LOGIC
+        function applyCoupon() {
+            const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+            const msgEl = document.getElementById('coupon-msg');
+            msgEl.className = "text-[9px] mt-1 font-bold";
+            
+            if(!code) return;
+
+            // Check if already used
+            if(redeemedCoupons.includes(code)) {
+                msgEl.innerText = "Code already redeemed on this device.";
+                msgEl.classList.add("text-red-600");
+                return;
+            }
+
+            if(code.startsWith("REFUND-")) { 
+                appliedDiscount = parseInt(code.split('-')[1]) || 0; 
+                msgEl.innerText = "Refund credit applied.";
+                msgEl.classList.add("text-green-600");
+            }
+            else if(COUPONS[code]) { 
+                appliedDiscount = Math.floor(cart.reduce((s,i)=>s+i.rawPrice,0) * COUPONS[code]); 
+                msgEl.innerText = "Discount applied successfully.";
+                msgEl.classList.add("text-green-600");
+            } else {
+                appliedDiscount = 0;
+                msgEl.innerText = "Invalid code.";
+                msgEl.classList.add("text-red-600");
+            }
+            updateCartUI();
         }
 
         function toggleCartModal() { document.getElementById('cart-modal').classList.toggle('active'); }
@@ -237,6 +359,7 @@
             const address = document.getElementById('checkout-address').value;
             const payment = document.getElementById('selected-payment').value;
             const total = cart.reduce((sum, item) => sum + item.rawPrice, 0) - appliedDiscount;
+            const couponUsed = document.getElementById('coupon-input').value.trim().toUpperCase();
 
             if(!name || !phone || !address) return alert("Please fill in your Shipping Details.");
 
@@ -248,7 +371,7 @@
 
             localStorage.setItem('redderUser', JSON.stringify({ name, phone, address }));
 
-            const orderData = { customerName: name, address: address, phone: phone, items: cart, totalAmount: total, paymentMethod: payment };
+            const orderData = { customerName: name, address: address, phone: phone, items: cart, totalAmount: total, paymentMethod: payment, coupon: couponUsed };
 
             try {
                 const btn = event.target; const originalText = btn.innerText;
@@ -260,6 +383,12 @@
                     const data = await response.json();
                     document.getElementById('success-order-id').innerText = "#" + data._id.slice(-6).toUpperCase();
                     
+                    // SAVE USED COUPON TO PREVENT REUSE
+                    if(couponUsed && (COUPONS[couponUsed] || couponUsed.startsWith("REFUND-"))) {
+                        redeemedCoupons.push(couponUsed);
+                        localStorage.setItem(COUPON_STORAGE_KEY, JSON.stringify(redeemedCoupons));
+                    }
+
                     if(payment === 'UPI') {
                         document.getElementById('upi-pay-section').classList.remove('hidden');
                         const upiLink = `upi://pay?pa=${MY_UPI_ID}&pn=REDDER&am=${total}&cu=INR`;
@@ -271,7 +400,7 @@
 
                     document.getElementById('success-modal').classList.add('active');
                     toggleCartModal();
-                    cart = []; updateCartUI();
+                    cart = []; appliedDiscount = 0; updateCartUI();
                 } else {
                     alert("Connection failed."); btn.innerText = originalText; btn.disabled = false;
                 }
@@ -288,12 +417,11 @@
         function closePolicy() { document.getElementById('policy-modal').classList.remove('active'); }
         function openGeneralChat() { window.open(`https://wa.me/918527007740`); }
 
-        // 🚀 RETURN MODAL LOGIC
+        // RETURN MODAL LOGIC
         function toggleReturnModal() { document.getElementById('return-modal').classList.toggle('active'); }
         function initiateReturn() {
             const orderId = document.getElementById('return-order-id').value.trim();
             if(!orderId) return alert("Please enter your Order ID");
-            
             const message = `Hi Redder Concierge,\n\nI would like to initiate a return/exchange for Order ${orderId}.\n\nPlease assist me with the pickup process.`;
             window.open(`https://wa.me/918527007740?text=${encodeURIComponent(message)}`);
             toggleReturnModal();
