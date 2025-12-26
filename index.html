@@ -195,8 +195,12 @@
                 <a id="wa-link-btn" href="#" target="_blank" class="bg-[#25D366] text-white px-6 py-4 rounded-md text-xs font-bold uppercase tracking-widest block w-full shadow-lg hover:bg-green-600 transition-colors">
                     <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Send Order on WhatsApp
                 </a>
-                <p class="text-[9px] text-stone-400 mt-3">Click if WhatsApp didn't open automatically</p>
-            </div>
+                
+                <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded text-left">
+                    <p class="text-[#d32f2f] font-bold text-[11px] leading-snug">⚠️ VITAL STEP: You MUST click the green button above!</p>
+                    <p class="text-red-800 text-[10px] mt-1">We will NOT receive your order details until you send the WhatsApp message.</p>
+                </div>
+                </div>
 
             <div class="bg-stone-50 p-6 rounded-sm mb-6 text-left border border-stone-100">
                 <p class="text-[9px] font-bold uppercase text-stone-400 mb-1">Order ID</p>
@@ -262,7 +266,7 @@
     <div id="fav-modal" class="modal fixed inset-0 z-[100] flex justify-end bg-black/50 backdrop-blur-sm"><div class="slide-panel bg-white w-full max-w-md h-full p-6 flex flex-col shadow-2xl"><div class="flex justify-between items-center mb-6 border-b pb-4 text-[#b91c1c]"><h3 class="text-xl font-serif italic">Favorites</h3><button onclick="goBack()" class="text-2xl w-8 h-8">&times;</button></div><div id="fav-items" class="flex-1 overflow-y-auto space-y-4 scrollbar-thin"></div></div></div>
 
     <script>
-        const MY_UPI_ID = "918527007740@paytm"; 
+        const MY_UPI_ID = "upi31908@pingpay"; 
         
         // 🔒 SECURE COUPON LIST
         const COUPONS = { 
